@@ -6,8 +6,8 @@
 import fs from "fs";
 import React from "react";
 import ReactDOM from "react-dom";
-import "./package.json.tmpl";
-import "./index.html.tmpl";
+import "./package.json.ejs";
+import "./index.html.ejs";
 import "./icon.png";
 import "./opensans-regular.woff2";
 import "./opensans-bold.woff2";

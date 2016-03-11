@@ -28,11 +28,11 @@ const MANIFEST_OPTS = WIN_BUILD
   : "";
 const INDEX_LOADERS = [
   q("file", NAMEQ),
-  q("string-replace", {search: "${TITLE}", replace: TISTORE_VERSION}),
+  q("ejs-html", {title: TISTORE_VERSION}),
 ];
 const PACKAGE_LOADERS = [
   q("file", NAMEQ),
-  q("string-replace", {search: "${CUSTOM_OPTS}", replace: MANIFEST_OPTS}),
+  q("ejs-html", {opts: MANIFEST_OPTS}),
 ];
 const SkipLoader = require.resolve("./skip-loader");
 const ExtractLoader = ExtractTextPlugin.extract("css");
@@ -65,8 +65,8 @@ export default {
       {test: insrc(".+\\.js"), loader: "babel"},
       {test: insrc(".+\\.png"), loader: "file", query: FULLNAMEQ},
       {test: insrc("..", "bin", ".+\\.exe"), loader: "file", query: FULLNAMEQ},
-      {test: insrc("index", "index\\.html\\.tmpl"), loaders: INDEX_LOADERS},
-      {test: insrc("index", "package\\.json\\.tmpl"), loaders: PACKAGE_LOADERS},
+      {test: insrc("index", "index\\.html\\.ejs"), loaders: INDEX_LOADERS},
+      {test: insrc("index", "package\\.json\\.ejs"), loaders: PACKAGE_LOADERS},
       // Fonts, font-awesome.
       {test: /\.woff2(\?v=[\d.]+)?$/, loader: "file", query: FULLNAMEQ},
       {test: /\.(ttf|eot|svg|woff)(\?v=[\d.]+)?$/, loader: SkipLoader},
