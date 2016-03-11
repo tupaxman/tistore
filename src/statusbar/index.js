@@ -9,6 +9,8 @@ export default React.createClass({
   styles: {
     main: {
       margin: 3,
+      cursor: "default",
+      WebkitUserSelect: "none",
     },
   },
   getText() {

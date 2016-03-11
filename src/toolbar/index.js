@@ -36,6 +36,7 @@ export default React.createClass({
     },
   },
   handleThreadsFocus() {
+    // Allow to change value only via spinners.
     this.refs.threads.blur();
   },
   render() {

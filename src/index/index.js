@@ -34,17 +34,35 @@ const Index = React.createClass({
         mainWindow.close(true);
       }
     });
-    this.menu = new window.nw.Menu();
-    this.menu.append(new window.nw.MenuItem({
+    let menu = new window.nw.Menu({type: "menubar"});
+
+    let linksItem = new window.nw.MenuItem({label: "Links"});
+    let linksMenu = new window.nw.Menu();
+    linksMenu.append(new window.nw.MenuItem({
       label: "Add from file",
     }));
-    this.menu.append(new window.nw.MenuItem({
-      label: "Export links",
+    linksMenu.append(new window.nw.MenuItem({
+      label: "Export to file",
     }));
-    this.menu.append(new window.nw.MenuItem({
+    linksMenu.append(new window.nw.MenuItem({
       label: "Clear list",
       click: this.handleLinksClear,
     }));
+    linksItem.submenu = linksMenu;
+    menu.append(linksItem);
+
+    let helpItem = new window.nw.MenuItem({label: "Help"});
+    let helpMenu = new window.nw.Menu();
+    helpMenu.append(new window.nw.MenuItem({
+      label: "About",
+    }));
+    helpMenu.append(new window.nw.MenuItem({
+      label: "Official site",
+    }));
+    helpItem.submenu = helpMenu;
+    menu.append(helpItem);
+
+    mainWindow.menu = menu;
   },
   styles: {
     main: {
@@ -62,10 +80,6 @@ const Index = React.createClass({
     },
     statusbar: {
     },
-  },
-  handleMenuShow: function(e) {
-    e.preventDefault();
-    this.menu.popup(e.nativeEvent.x, e.nativeEvent.y);
   },
   handleListLoad(list) {
     // FIXME: Process errors.
@@ -90,7 +104,7 @@ const Index = React.createClass({
         <div style={this.styles.toolbar}>
           <Toolbar files={this.state.files} />
         </div>
-        <div style={this.styles.filelist} onContextMenu={this.handleMenuShow}>
+        <div style={this.styles.filelist}>
           <Filelist files={this.state.files} />
         </div>
         <div style={this.styles.statusbar}>
