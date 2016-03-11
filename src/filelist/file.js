@@ -12,8 +12,8 @@ export default React.createClass({
   },
   styles: {
     link: {
-      textDecoration: "none",
-      fontSize: "12px",
+      fontSize: "14px",
+      cursor: "pointer",
     },
   },
   getMainStyle() {
@@ -21,13 +21,27 @@ export default React.createClass({
       background: (this.props.index & 1) ? "#eee" : "#fff",
     };
   },
+  getLinkText() {
+    const url = this.props.url;
+    if (url.startsWith("http://")) {
+      return url.slice(7);
+    } else if (url.startsWith("https://")) {
+      return url.slice(8);
+    } else {
+      // Just in case.
+      return url;
+    }
+  },
+  handleLinkClick() {
+    global.nw.Shell.openExternal(this.props.url);
+  },
   render() {
     return (
       <tr style={this.getMainStyle()}>
         <td>
-          <a href={this.props.url} target="_blank" style={this.styles.link}>
-            {this.props.url}
-          </a>
+          <span onClick={this.handleLinkClick} style={this.styles.link}>
+            {this.getLinkText()}
+          </span>
         </td>
       </tr>
     );

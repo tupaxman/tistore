@@ -1,5 +1,6 @@
 import path from "path";
 import webpack from "webpack";
+import ExtractTextPlugin from "extract-text-webpack-plugin";
 import pkg from "./package.json";
 
 function inmodules(...parts) {
@@ -33,8 +34,11 @@ const PACKAGE_LOADERS = [
   q("file", NAMEQ),
   q("string-replace", {search: "${CUSTOM_OPTS}", replace: MANIFEST_OPTS}),
 ];
+const SkipLoader = require.resolve("./skip-loader");
+const ExtractLoader = ExtractTextPlugin.extract("css");
 const COMMON_PLUGINS = [
   new webpack.DefinePlugin({WIN_BUILD}),
+  new ExtractTextPlugin("index.css"),
 ];
 const PLUGINS = DEBUG ? COMMON_PLUGINS : COMMON_PLUGINS.concat([
   new webpack.optimize.OccurenceOrderPlugin(),
@@ -59,10 +63,14 @@ export default {
       // See <https://github.com/webpack/webpack/issues/184>.
       {test: inmodules(".+\\.json"), loader: "json"},
       {test: insrc(".+\\.js"), loader: "babel"},
-      {test: insrc(".+\\.(woff2|png)"), loader: "file", query: FULLNAMEQ},
+      {test: insrc(".+\\.png"), loader: "file", query: FULLNAMEQ},
       {test: insrc("..", "bin", ".+\\.exe"), loader: "file", query: FULLNAMEQ},
       {test: insrc("index", "index\\.html\\.tmpl"), loaders: INDEX_LOADERS},
       {test: insrc("index", "package\\.json\\.tmpl"), loaders: PACKAGE_LOADERS},
+      // Fonts, font-awesome.
+      {test: /\.woff2(\?v=[\d.]+)?$/, loader: "file", query: FULLNAMEQ},
+      {test: /\.(ttf|eot|svg|woff)(\?v=[\d.]+)?$/, loader: SkipLoader},
+      {test: inmodules("font-awesome", ".+\\.css"), loader: ExtractLoader},
     ],
   },
   plugins: PLUGINS,

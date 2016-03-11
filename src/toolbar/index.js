@@ -4,6 +4,7 @@
  */
 
 import React from "react";
+import Icon from "react-fa";
 
 export default React.createClass({
   getInitialState() {
@@ -12,6 +13,10 @@ export default React.createClass({
   styles: {
   },
   render() {
-    return <span>A</span>;
+    return (
+      <div>
+        <Icon spin name="spinner" />
+      </div>
+    );
   },
 });

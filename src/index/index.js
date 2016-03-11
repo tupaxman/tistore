@@ -34,13 +34,6 @@ const Index = React.createClass({
         mainWindow.close(true);
       }
     });
-    // See <https://github.com/nwjs/nw.js/issues/1162>.
-    // By default nw.js will try to open urls by itself but it's not
-    // that user probably wants.
-    mainWindow.on("new-win-policy", (frame, url, policy) => {
-      policy.ignore();
-      global.nw.Shell.openExternal(url);
-    });
   },
   styles: {
     main: {
