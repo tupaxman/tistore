@@ -5,22 +5,9 @@
  */
 
 import React from "react";
+import Icon from "react-fa";
 
 export default React.createClass({
-  getInitialState() {
-    return {};
-  },
-  styles: {
-    link: {
-      fontSize: "14px",
-      cursor: "pointer",
-    },
-  },
-  getMainStyle() {
-    return {
-      background: (this.props.index & 1) ? "#eee" : "#fff",
-    };
-  },
   getLinkText() {
     const url = this.props.url;
     if (url.startsWith("http://")) {
@@ -32,17 +19,13 @@ export default React.createClass({
       return url;
     }
   },
-  handleLinkClick() {
-    global.nw.Shell.openExternal(this.props.url);
-  },
   render() {
     return (
-      <tr style={this.getMainStyle()}>
-        <td>
-          <span onClick={this.handleLinkClick} style={this.styles.link}>
-            {this.getLinkText()}
-          </span>
-        </td>
+      <tr className="tistore-col">
+        <td className="tistore-row1"><Icon name="check" /></td>
+        <td className="tistore-row2">{this.getLinkText()}</td>
+        <td className="tistore-row3">testteaaaaaaaaaaaaaaaaaaasttest.jpg</td>
+        <td className="tistore-row4">300 KiB</td>
       </tr>
     );
   },

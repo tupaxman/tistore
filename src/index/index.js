@@ -34,6 +34,17 @@ const Index = React.createClass({
         mainWindow.close(true);
       }
     });
+    this.menu = new window.nw.Menu();
+    this.menu.append(new window.nw.MenuItem({
+      label: "Add from file",
+    }));
+    this.menu.append(new window.nw.MenuItem({
+      label: "Export links",
+    }));
+    this.menu.append(new window.nw.MenuItem({
+      label: "Clear list",
+      click: this.handleLinksClear,
+    }));
   },
   styles: {
     main: {
@@ -46,11 +57,15 @@ const Index = React.createClass({
     filelist: {
       flex: 1,
       overflowY: "scroll",
-      border: "solid #999",
+      border: "solid #a9a9a9",
       borderWidth: "1px 0",
     },
     statusbar: {
     },
+  },
+  handleMenuShow: function(e) {
+    e.preventDefault();
+    this.menu.popup(e.nativeEvent.x, e.nativeEvent.y);
   },
   handleListLoad(list) {
     // FIXME: Process errors.
@@ -66,17 +81,20 @@ const Index = React.createClass({
     });
     this.setState({files});
   },
+  handleLinksClear() {
+    this.setState({files: []});
+  },
   render() {
     return (
       <div style={this.styles.main}>
         <div style={this.styles.toolbar}>
-          <Toolbar/>
+          <Toolbar files={this.state.files} />
         </div>
-        <div style={this.styles.filelist}>
+        <div style={this.styles.filelist} onContextMenu={this.handleMenuShow}>
           <Filelist files={this.state.files} />
         </div>
         <div style={this.styles.statusbar}>
-          <Statusbar/>
+          <Statusbar files={this.state.files} />
         </div>
       </div>
     );

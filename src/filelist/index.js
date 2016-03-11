@@ -7,18 +7,17 @@ import React from "react";
 import File from "./file";
 
 export default React.createClass({
-  getInitialState() {
-    return {};
-  },
   styles: {
     main: {
       width: "100%",
       borderSpacing: 0,
+      WebkitUserSelect: "none",
+      cursor: "default",
     },
   },
   render() {
-    const fileNodes = this.props.files.map((file, i) =>
-      <File key={file.url} index={i} {...file} />
+    const fileNodes = this.props.files.map(file =>
+      <File key={file.url} {...file} />
     );
     return (
       <table style={this.styles.main}>

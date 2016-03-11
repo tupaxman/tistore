@@ -9,22 +9,16 @@
     @font-face{font-family:"Open Sans";font-weight:400;src:url(opensans-regular.woff2) format("woff2")}
     @font-face{font-family:"Open Sans";font-weight:700;src:url(opensans-bold.woff2) format("woff2")}
     html,body,#tistore-index{height:100%;margin:0;background-color:#eee;font-family:"Open Sans",sans-serif}
-    select:focus{outline:none}
-    select:disabled{opacity:0.5;cursor:not-allowed}
-    input[type=range]:focus{outline:none}
-    input[type=button]:focus{outline:none}
-    input[type=button]:disabled{cursor:auto!important}
-    /* Progress. */
-    progress::-webkit-progress-bar {
-      background-color: #ddd;
-      border-radius: 2px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.25) inset;
-    }
-    progress::-webkit-progress-value {
-      background-color: #0bb;
-      background-image: -webkit-linear-gradient(top,rgba(255,255,255,.25),rgba(0,0,0,.25));
-      border-radius: 2px;
-    }
+    button:disabled{cursor:auto!important}
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button{opacity:1;cursor:pointer}
+    /* Table (because the amount of inline styles would be enormous. */
+    .tistore-col{font-size:14px}
+    .tistore-col:nth-child(odd){background-color:#ddd}
+    .tistore-row1{width:1px;color:green}
+    .tistore-row2{width:1px}
+    .tistore-row3{text-align:center}
+    .tistore-row4{width:1px;white-space:nowrap}
   </style>
 </head>
 <body>
