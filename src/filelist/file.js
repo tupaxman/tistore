@@ -8,8 +8,11 @@ import React from "react";
 import Icon from "react-fa";
 
 export default React.createClass({
+  shouldComponentUpdate(nextProps/*, nextState*/) {
+    return this.props.file !== nextProps.file;
+  },
   getLinkText() {
-    const url = this.props.url;
+    const url = this.props.file.url;
     const hostIdx = url.indexOf("//") + 2;
     return url.slice(hostIdx);
   },

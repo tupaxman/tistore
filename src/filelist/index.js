@@ -19,7 +19,7 @@ export default React.createClass({
   },
   render() {
     const fileNodes = this.props.files.map(file =>
-      <File key={file.url} {...file} />
+      <File key={file.url} file={file} />
     );
     return (
       <table style={this.styles.main}>

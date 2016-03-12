@@ -35,7 +35,7 @@ export default React.createClass({
       cursor: "default",
     },
   },
-  isSetdirDisabled() {
+  isSetDirDisabled() {
     return this.props.aspawning || !!this.props.aerror;
   },
   isUrlDisabled() {
@@ -66,7 +66,8 @@ export default React.createClass({
         <button
           style={this.styles.button}
           title="Set output directory"
-          disabled={this.isSetdirDisabled()}
+          disabled={this.isSetDirDisabled()}
+          onClick={this.props.onSetDir}
         >
           <Icon name="folder-open-o" />
         </button>

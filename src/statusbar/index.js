@@ -19,7 +19,7 @@ export default React.createClass({
     label: {
       paddingRight: 8,
     },
-    outdir: {
+    outDir: {
       textDecoration: "none",
     },
     spawning: {
@@ -29,10 +29,10 @@ export default React.createClass({
       color: "red",
     },
   },
-  handleOutdirClick(e) {
+  handleOutDirClick(e) {
     e.preventDefault();
     // `openItem` doesn't work with directory on Linux.
-    global.nw.Shell.openExternal("file://" + this.props.outdir);
+    global.nw.Shell.openExternal("file://" + this.props.outDir);
   },
   getAriaSpawningNode() {
     return (
@@ -51,7 +51,7 @@ export default React.createClass({
     );
   },
   getPreaddNode() {
-    return <span>Add some links.</span>;
+    return <span>Add/crawl some links.</span>;
   },
   getPrerunNode() {
     const len = this.props.files.length;
@@ -60,9 +60,9 @@ export default React.createClass({
       <span>
         {len} link{s} loaded, ready to start.
         <span style={this.styles.label}> Saving to:</span>
-        <a href style={this.styles.outdir} onClick={this.handleOutdirClick}>
+        <a href style={this.styles.outDir} onClick={this.handleOutDirClick}>
           <Icon name="folder-o" />
-          <span> {this.props.outdir}</span>
+          <span> {this.props.outDir}</span>
         </a>
       </span>
     );
