@@ -23,7 +23,7 @@ export default React.createClass({
     },
     url: {
       flex: 1,
-      fontSize: "25px",
+      fontSize: "22px",
       height: 40,
       marginRight: 3,
       padding: 3,
@@ -44,7 +44,7 @@ export default React.createClass({
       <div style={this.styles.main}>
         <button
           style={this.styles.button}
-          title="Select output directory"
+          title="Set output directory"
         >
           <Icon name="folder-open-o" />
         </button>

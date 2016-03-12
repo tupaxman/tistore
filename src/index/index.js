@@ -4,6 +4,7 @@
  */
 
 import fs from "fs";
+import os from "os";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./package.json.ejs";
@@ -17,7 +18,10 @@ import Statusbar from "../statusbar";
 
 const Index = React.createClass({
   getInitialState() {
-    return {files: []};
+    return {
+      outdir: os.tmpdir(),
+      files: [],
+    };
   },
   componentWillMount() {
     const list = process.env.TISTORE_DEBUG_LIST;
@@ -108,7 +112,7 @@ const Index = React.createClass({
           <Filelist files={this.state.files} />
         </div>
         <div style={this.styles.statusbar}>
-          <Statusbar files={this.state.files} />
+          <Statusbar files={this.state.files} outdir={this.state.outdir} />
         </div>
       </div>
     );
