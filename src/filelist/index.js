@@ -13,6 +13,8 @@ export default React.createClass({
       borderSpacing: 0,
       WebkitUserSelect: "none",
       cursor: "default",
+      fontSize: "14px",
+      tableLayout: "fixed",
     },
   },
   render() {

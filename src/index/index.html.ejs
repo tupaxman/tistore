@@ -6,8 +6,12 @@
   <link rel="stylesheet" href="index.css">
   <style>
     /* Base. */
-    @font-face{font-family:"Open Sans";font-weight:400;src:url(opensans-regular.woff2) format("woff2")}
-    @font-face{font-family:"Open Sans";font-weight:700;src:url(opensans-bold.woff2) format("woff2")}
+    @font-face{font-family:"Open Sans";src:url(opensans-regular.woff2) format("woff2");
+               font-weight:normal;font-style:normal}
+    @font-face{font-family:"Open Sans";src:url(opensans-bold.woff2) format("woff2");
+               font-weight:bold;font-style:normal}
+    @font-face{font-family:"Open Sans";src:url(opensans-italic.woff2) format("woff2");
+               font-weight:normal;font-style:italic}
     html,body,#tistore-index{height:100%;margin:0;background-color:#eee;font-family:"Open Sans",sans-serif}
     button:disabled{cursor:auto!important}
     input[type=number]::-webkit-inner-spin-button,
@@ -17,12 +21,14 @@
        for details. */
     .fa-spinner.fa-pulse{transform-origin:50% 46%}
     /* Table (because the amount of inline styles would be enormous. */
-    .tistore-col{font-size:14px}
     .tistore-col:nth-child(odd){background-color:#ddd}
-    .tistore-row1{width:1%;color:green}
-    .tistore-row2{width:50%}
-    .tistore-row3{width:45%}
-    .tistore-row4{width:4%}
+    .tistore-row1{width:14px;overflow:hidden;padding:2px 10px;text-align:center}
+    .tistore-row2{width:50%;overflow:hidden;text-overflow:ellipsis;padding-right:15px;
+                  color:#333;font-style:italic}
+    .tistore-row3{overflow:hidden;text-overflow:ellipsis;text-align:center}
+    .tistore-row4{width:65px;overflow:hidden;text-align:right;color:#999;font-style:italic}
+    .tistore-row1-ready{color:orange}
+    .tistore-row1-ok{color:green}
   </style>
 </head>
 <body>

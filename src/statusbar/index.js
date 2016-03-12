@@ -9,7 +9,7 @@ import Icon from "react-fa";
 export default React.createClass({
   styles: {
     main: {
-      margin: "3px 5px",
+      margin: 3,
       cursor: "default",
       WebkitUserSelect: "none",
       whiteSpace: "nowrap",

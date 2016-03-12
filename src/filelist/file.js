@@ -10,22 +10,18 @@ import Icon from "react-fa";
 export default React.createClass({
   getLinkText() {
     const url = this.props.url;
-    if (url.startsWith("http://")) {
-      return url.slice(7);
-    } else if (url.startsWith("https://")) {
-      return url.slice(8);
-    } else {
-      // Just in case.
-      return url;
-    }
+    const hostIdx = url.indexOf("//") + 2;
+    return url.slice(hostIdx);
   },
   render() {
     return (
       <tr className="tistore-col">
-        <td className="tistore-row1"><Icon name="check" /></td>
+        <td className="tistore-row1 tistore-row1-ready">
+          <Icon name="play" />
+        </td>
         <td className="tistore-row2">{this.getLinkText()}</td>
-        <td className="tistore-row3">testteaaaaaaaaaaaaaaaaaaasttest.jpg</td>
-        <td className="tistore-row4">300 KiB</td>
+        <td className="tistore-row3">-</td>
+        <td className="tistore-row4"></td>
       </tr>
     );
   },

@@ -12,6 +12,7 @@ import "./index.html.ejs";
 import "./icon.png";
 import "./opensans-regular.woff2";
 import "./opensans-bold.woff2";
+import "./opensans-italic.woff2";
 import Aria2c from "../aria2c";
 import Toolbar from "../toolbar";
 import Filelist from "../filelist";

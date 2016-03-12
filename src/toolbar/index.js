@@ -73,7 +73,7 @@ export default React.createClass({
         <input
           type="text"
           style={this.styles.url}
-          placeholder="Tistory blog/page"
+          placeholder="Tistory blog/page URL"
           disabled={this.isUrlDisabled()}
         />
         <button
