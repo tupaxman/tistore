@@ -13,6 +13,9 @@
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button{opacity:1;cursor:pointer}
     a[href]:hover{color:red}
+    /* Ugly hack to stop shaking effect. See <https://github.com/FortAwesome/Font-Awesome/issues/671>
+       for details. */
+    .fa-spinner.fa-pulse{transform-origin:50% 46%}
     /* Table (because the amount of inline styles would be enormous. */
     .tistore-col{font-size:14px}
     .tistore-col:nth-child(odd){background-color:#ddd}

@@ -22,31 +22,64 @@ export default React.createClass({
     outdir: {
       textDecoration: "none",
     },
+    spawning: {
+      color: "blue",
+    },
+    error: {
+      color: "red",
+    },
   },
   handleOutdirClick(e) {
     e.preventDefault();
     // `openItem` doesn't work with directory on Linux.
     global.nw.Shell.openExternal("file://" + this.props.outdir);
   },
-  getTextNode() {
+  getAriaSpawningNode() {
+    return (
+      <span style={this.styles.spawning}>
+        <Icon pulse name="spinner" />
+        <span> Spawning aria2c daemon…</span>
+      </span>
+    );
+  },
+  getAriaErrorNode() {
+    return (
+      <span style={this.styles.error}>
+        <Icon name="warning" />
+        <span> {this.props.aerror.message}</span>
+      </span>
+    );
+  },
+  getPreaddNode() {
+    return <span>Add some links.</span>;
+  },
+  getPrerunNode() {
     const len = this.props.files.length;
-    if (len) {
-      const s = len > 1 ? "s" : "";
-      return (
-        <span>
-          {len} link{s} loaded, ready to start.
-          <span style={this.styles.label}> Saving to:</span>
-          <a href style={this.styles.outdir} onClick={this.handleOutdirClick}>
-            <Icon name="folder-o" />
-            <span> {this.props.outdir}</span>
-          </a>
-        </span>
-      );
+    const s = len > 1 ? "s" : "";
+    return (
+      <span>
+        {len} link{s} loaded, ready to start.
+        <span style={this.styles.label}> Saving to:</span>
+        <a href style={this.styles.outdir} onClick={this.handleOutdirClick}>
+          <Icon name="folder-o" />
+          <span> {this.props.outdir}</span>
+        </a>
+      </span>
+    );
+  },
+  getStatusNode() {
+    const hasLinks = !!this.props.files.length;
+    if (this.props.aerror) {
+      return this.getAriaErrorNode();
+    } else if (this.props.aspawning) {
+      return this.getAriaSpawningNode();
+    } else if (hasLinks) {
+      return this.getPrerunNode();
     } else {
-      return <span>Add some links.</span>;
+      return this.getPreaddNode();
     }
   },
   render() {
-    return <div style={this.styles.main}>{this.getTextNode()}</div>;
+    return <div style={this.styles.main}>{this.getStatusNode()}</div>;
   },
 });
