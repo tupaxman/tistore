@@ -18,6 +18,7 @@ import Toolbar from "../toolbar";
 import Filelist from "../filelist";
 import Statusbar from "../statusbar";
 import FileDialog from "../file-dialog";
+import pkg from "../../package.json";
 
 const Index = React.createClass({
   getInitialState() {
@@ -99,9 +100,11 @@ const Index = React.createClass({
     let helpMenu = new window.nw.Menu();
     helpMenu.append(new window.nw.MenuItem({
       label: "About",
+      click: this.handleAboutClick,
     }));
     helpMenu.append(new window.nw.MenuItem({
       label: "Official site",
+      click: this.handleSiteClick,
     }));
     let helpItem = new window.nw.MenuItem({label: "Help"});
     helpItem.submenu = helpMenu;
@@ -176,6 +179,12 @@ const Index = React.createClass({
   },
   handleSetDir() {
     this.refs.openDir.select().then(d => this.setState({outDir: d.path}));
+  },
+  handleAboutClick() {
+    alert(pkg.about);
+  },
+  handleSiteClick() {
+    global.nw.Shell.openExternal(pkg.homepage);
   },
   render() {
     return (

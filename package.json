@@ -3,6 +3,8 @@
   "version": "0.0.1-dev",
   "codename": "Jeon Boram",
   "description": "Tistory photo grabber",
+  "homepage": "https://github.com/Kagami/tistore",
+  "about": "tistore is a simple GUI application for grabbing photos from Tistory blogs. It can grab entire blog, separate post or use a list of URLs and download them in parallel using blazingly fast aria2 backend.",
   "scripts": {
     "start": "webpack --watch",
     "dev": "nw dist/app",
@@ -35,7 +37,6 @@
   "bugs": {
     "url": "https://github.com/Kagami/tistore/issues"
   },
-  "homepage": "https://github.com/Kagami/tistore#readme",
   "dependencies": {
     "react": "^0.14.7",
     "react-dom": "^0.14.7",

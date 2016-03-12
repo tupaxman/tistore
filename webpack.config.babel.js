@@ -60,8 +60,7 @@ export default {
     // See <https://github.com/webpack/webpack/issues/138>.
     noParse: inmodules(".*json-schema", "lib", "validate\\.js"),
     loaders: [
-      // See <https://github.com/webpack/webpack/issues/184>.
-      {test: inmodules(".+\\.json"), loader: "json"},
+      {test: /\.json$/, loader: "json"},
       {test: insrc(".+\\.js"), loader: "babel"},
       {test: insrc(".+\\.png"), loader: "file", query: FULLNAMEQ},
       {test: insrc("..", "bin", ".+\\.exe"), loader: "file", query: FULLNAMEQ},
