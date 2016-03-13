@@ -133,6 +133,7 @@ const Index = React.createClass({
         this.setState({aspawning: false});
         this.aria2c = aria2c;
         this.setDir(this.state.outDir);
+        this.handleThreadsChange(this.state.threads);
       });
     }).catch(err => {
       this.setState({aspawning: false, aerror: err});
@@ -178,9 +179,9 @@ const Index = React.createClass({
     this.fileSet.clear();
     this.setState({files: this.fileSet.list});
   },
-  setDir(dpath) {
-    this.aria2c.setOption("dir", dpath);
-    this.setState({outDir: dpath});
+  setDir(outDir) {
+    this.aria2c.setOption("dir", outDir);
+    this.setState({outDir});
   },
   handleSetDir() {
     this.refs.openDir.select().then(d => this.setDir(d.path));
@@ -192,6 +193,7 @@ const Index = React.createClass({
     global.nw.Shell.openExternal(pkg.homepage);
   },
   handleThreadsChange(threads) {
+    this.aria2c.setOption("max-concurrent-downloads", threads);
     this.setState({threads});
   },
   handleAriaDisconnect() {

@@ -5,7 +5,7 @@
 
 import crypto from "crypto";
 import {spawn} from "child_process";
-import {getRunPath} from "../util";
+import {CHROME_UA, getRunPath} from "../util";
 import Aria2c from "./rpc";
 if (WIN_BUILD) {
   require("../../bin/aria2c.exe");
@@ -14,6 +14,11 @@ if (WIN_BUILD) {
 export default {
   // FIXME(Kagami): What to do if port is in use?
   _RPC_PORT: 11208,
+  // NOTE(Kagami): This is hard aria2 limitation. So if all our links
+  // from the same server, concurency won't exceed that number. This
+  // shouldn't happen on practice though (tistory uses a lot of storage
+  // servers).
+  _MAX_CONNECTION_PER_SERVER: 16,
   _genRPCSecret() {
     // 128 bit of entropy.
     return crypto.randomBytes(16).toString("hex");
@@ -79,6 +84,12 @@ export default {
       "--enable-rpc",
       "--rpc-listen-port", this._RPC_PORT,
       "--rpc-secret", secret,
+      // Maximize per-server limit.
+      "--max-connection-per-server", this._MAX_CONNECTION_PER_SERVER,
+      // Don't split files for simplicity.
+      "--split", "1",
+      // Just in case.
+      "--user-agent", CHROME_UA,
     ], secret);
   },
 };
