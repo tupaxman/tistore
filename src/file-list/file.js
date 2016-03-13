@@ -1,7 +1,6 @@
 /**
- * Component that provides view/action logic for the single file loaded
- * inside program.
- * @module tistore/filelist/file
+ * View/action logic for the single file inside list.
+ * @module tistore/file-list/file
  */
 
 import React from "react";

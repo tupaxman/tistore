@@ -1,6 +1,6 @@
 /**
- * Statusbar GUI widget.
- * @module tistore/statusbar
+ * Status bar GUI widget.
+ * @module tistore/status-bar
  */
 
 import React from "react";
@@ -50,10 +50,10 @@ export default React.createClass({
       </span>
     );
   },
-  getPreaddNode() {
+  getPreAddNode() {
     return <span>Add/crawl some links.</span>;
   },
-  getPrerunNode() {
+  getPreRunNode() {
     const len = this.props.files.length;
     const s = len > 1 ? "s" : "";
     return (
@@ -74,9 +74,9 @@ export default React.createClass({
     } else if (this.props.aspawning) {
       return this.getAriaSpawningNode();
     } else if (hasLinks) {
-      return this.getPrerunNode();
+      return this.getPreRunNode();
     } else {
-      return this.getPreaddNode();
+      return this.getPreAddNode();
     }
   },
   render() {

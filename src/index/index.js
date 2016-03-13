@@ -15,8 +15,8 @@ import "./opensans-bold.woff2";
 import "./opensans-italic.woff2";
 import Aria2c from "../aria2c";
 import Toolbar from "../toolbar";
-import Filelist from "../filelist";
-import Statusbar from "../statusbar";
+import FileList from "../file-list";
+import StatusBar from "../status-bar";
 import FileDialog from "../file-dialog";
 import pkg from "../../package.json";
 
@@ -41,9 +41,11 @@ const Index = React.createClass({
         },
       };
     })();
+    const outDir = process.env.TISTORE_DEBUG_DIR || os.tmpdir();
     return {
+      outDir,
+      threads: 16,
       aspawning: true,
-      outDir: os.tmpdir(),
       files: this.fileSet.list,
     };
   },
@@ -60,12 +62,10 @@ const Index = React.createClass({
         mainWindow.close(true);
       }
     });
-    mainWindow.menu = this.getMenu();
+    this.setMenu();
     this.spawnAria();
   },
   componentDidUpdate() {
-    // NOTE(Kagami): Make sure this function is not skipped because of
-    // `shouldComponentUpdate` of whatever.
     // NOTE(Kagami): It's not possible to disable submenu on Linux (see
     // <https://github.com/nwjs/nw.js/issues/2312>), so we block all its
     // subelements instead.
@@ -77,7 +77,7 @@ const Index = React.createClass({
     this.exportLinksItem.enabled = isReady && hasLinks;
     this.clearLinksItem.enabled = isReady && hasLinks;
   },
-  getMenu() {
+  setMenu() {
     this.addLinksItem = new window.nw.MenuItem({
       label: "Add from file",
       click: this.handleLinksAdd,
@@ -112,7 +112,8 @@ const Index = React.createClass({
     let menu = new window.nw.Menu({type: "menubar"});
     menu.append(linksItem);
     menu.append(helpItem);
-    return menu;
+    let mainWindow = window.nw.Window.get();
+    mainWindow.menu = menu;
   },
   spawnAria() {
     const ariap = Aria2c.spawn();
@@ -139,15 +140,11 @@ const Index = React.createClass({
       flexDirection: "column",
       height: "100%",
     },
-    toolbar: {
-    },
-    filelist: {
+    fileList: {
       flex: 1,
       overflowY: "scroll",
       border: "solid #a9a9a9",
       borderWidth: "1px 0",
-    },
-    statusbar: {
     },
   },
   handleLinksAdd() {
@@ -186,22 +183,27 @@ const Index = React.createClass({
   handleSiteClick() {
     global.nw.Shell.openExternal(pkg.homepage);
   },
+  handleThreadsChange(threads) {
+    this.setState({threads});
+  },
   render() {
     return (
       <div style={this.styles.main}>
-        <div style={this.styles.toolbar}>
+        <div>
           <Toolbar
-            files={this.state.files}
             aspawning={this.state.aspawning}
             aerror={this.state.aerror}
+            files={this.state.files}
+            threads={this.state.threads}
             onSetDir={this.handleSetDir}
+            onThreadsChange={this.handleThreadsChange}
           />
         </div>
-        <div style={this.styles.filelist}>
-          <Filelist files={this.state.files} />
+        <div style={this.styles.fileList}>
+          <FileList files={this.state.files} />
         </div>
-        <div style={this.styles.statusbar}>
-          <Statusbar
+        <div>
+          <StatusBar
             files={this.state.files}
             outDir={this.state.outDir}
             aspawning={this.state.aspawning}

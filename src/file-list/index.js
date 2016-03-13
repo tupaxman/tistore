@@ -1,6 +1,6 @@
 /**
- * Filelist GUI widget.
- * @module tistore/filelist
+ * List of files widget.
+ * @module tistore/file-list
  */
 
 import React from "react";

@@ -7,9 +7,6 @@ import React from "react";
 import Icon from "react-fa";
 
 export default React.createClass({
-  getInitialState() {
-    return {threads: 16};
-  },
   styles: {
     main: {
       display: "flex",
@@ -60,6 +57,9 @@ export default React.createClass({
     // Allow to change value only via spinners.
     this.refs.threads.blur();
   },
+  handleThreadsChange(e) {
+    this.props.onThreadsChange(e.target.value);
+  },
   render() {
     return (
       <div style={this.styles.main}>
@@ -69,7 +69,7 @@ export default React.createClass({
           disabled={this.isSetDirDisabled()}
           onClick={this.props.onSetDir}
         >
-          <Icon name="folder-open-o" />
+          <Icon name="folder-o" />
         </button>
         <input
           type="text"
@@ -105,8 +105,9 @@ export default React.createClass({
           title="Number of threads"
           disabled={this.isThreadsDisabled()}
           onFocus={this.handleThreadsFocus}
+          onChange={this.handleThreadsChange}
+          value={this.props.threads}
           min="1"
-          defaultValue={this.state.threads}
           max="99"
         />
       </div>
