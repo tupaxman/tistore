@@ -132,6 +132,7 @@ const Index = React.createClass({
       return aria2c.connect().then(() => {
         this.setState({aspawning: false});
         this.aria2c = aria2c;
+        this.setDir(this.state.outDir);
       });
     }).catch(err => {
       this.setState({aspawning: false, aerror: err});
@@ -177,8 +178,12 @@ const Index = React.createClass({
     this.fileSet.clear();
     this.setState({files: this.fileSet.list});
   },
+  setDir(dpath) {
+    this.aria2c.setOption("dir", dpath);
+    this.setState({outDir: dpath});
+  },
   handleSetDir() {
-    this.refs.openDir.select().then(d => this.setState({outDir: d.path}));
+    this.refs.openDir.select().then(d => this.setDir(d.path));
   },
   handleAboutClick() {
     alert(pkg.about);

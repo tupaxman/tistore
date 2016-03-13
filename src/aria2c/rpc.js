@@ -27,7 +27,7 @@ export default class Aria2c extends EventEmitter {
       };
       ws.onmessage = e => {
         const msg = JSON.parse(e.data);
-        console.log("@@@ MSG", msg);
+        console.log("MSG<-", msg);
         const id = msg.id;
         const cb = this._callbacks[id];
         // TODO(Kagami): Notifications.
@@ -63,9 +63,15 @@ export default class Aria2c extends EventEmitter {
       method: `aria2.${method}`,
       id, params,
     };
+    console.log("MSG->", msg);
     return new Promise((resolve, reject) => {
       this._callbacks[id] = [resolve, reject];
       this._ws.send(JSON.stringify(msg));
     });
+  }
+  setOption(name, value) {
+    let opt = {};
+    opt[name] = value;
+    return this.call("changeGlobalOption", [opt]);
   }
 }

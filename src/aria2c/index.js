@@ -36,20 +36,21 @@ export default {
         exited = true;
         throw new Error(`Failed to run aria2c: ${err.message}`);
       }
-      function stderrHandler(data) {
-        stderr += data;
-      }
-      function stdoutHandler(data) {
+      proc.stdout.on("data", data => {
         stdout += data;
-        // TODO(Kagami): What if message will be changed?
+        // TODO(Kagami): What if message will be changed? Also note that
+        // we can't disable console logging at start (in order to parse
+        // this message), it's neither possible to disable via RPC
+        // later.
         if (stdout.includes("listening on TCP port")) {
-          proc.stdout.removeListener("data", stdoutHandler);
-          proc.stderr.removeListener("data", stderrHandler);
+          proc.stdout.end();
+          proc.stderr.end();
           resolve(new Aria2c({proc, port, secret}));
         }
-      }
-      proc.stdout.on("data", stdoutHandler);
-      proc.stderr.on("data", stderrHandler);
+      });
+      proc.stderr.on("data", data => {
+        stderr += data;
+      });
       proc.on("error", err => {
         reject(new Error(`Failed to run aria2c: ${err.message}`));
       });
@@ -74,9 +75,6 @@ export default {
   },
   spawn() {
     const secret = this._genRPCSecret();
-    // TODO(Kagami): Disable console logging to avoid unnecessary
-    // events? We still need to somehow determine whether aria2 is
-    // launched and currently we do this by parsing NOTICE log msgs.
     return this._run([
       "--enable-rpc",
       "--rpc-listen-port", this._RPC_PORT,
