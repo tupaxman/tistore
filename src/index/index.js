@@ -13,7 +13,7 @@ import "./icon.png";
 import "./opensans-regular.woff2";
 import "./opensans-bold.woff2";
 import "./opensans-italic.woff2";
-import Aria2c from "../aria2c";
+import Aria2s from "../aria2c";
 import Toolbar from "../toolbar";
 import FileList from "../file-list";
 import StatusBar from "../status-bar";
@@ -116,7 +116,7 @@ const Index = React.createClass({
     mainWindow.menu = menu;
   },
   spawnAria() {
-    const ariap = Aria2c.spawn();
+    const ariap = Aria2s.spawn();
     process.addListener("exit", () => {
       // Always stop spawned process on exit.
       // TODO(Kagami): Unfortunately nw doesn't fire this event on
@@ -128,9 +128,12 @@ const Index = React.createClass({
       }
     });
     ariap.then(aria2c => {
-      this.setState({aspawning: false});
-      this.aria2c = aria2c;
-    }, err => {
+      aria2c.on("close", this.handleAriaDisconnect);
+      return aria2c.connect().then(() => {
+        this.setState({aspawning: false});
+        this.aria2c = aria2c;
+      });
+    }).catch(err => {
       this.setState({aspawning: false, aerror: err});
     });
   },
@@ -151,7 +154,7 @@ const Index = React.createClass({
     this.refs.openFile.select().then(f => this.handleListLoad(f.path));
   },
   handleListLoad(fpath) {
-    // FIXME: Handle read errors.
+    // FIXME(Kagami): Handle read errors.
     const data = fs.readFileSync(fpath, {encoding: "utf-8"});
     data.trim().split(/\r?\n/).forEach(line => {
       line = line.trim();
@@ -166,7 +169,7 @@ const Index = React.createClass({
   handleLinksExport() {
     this.refs.saveFile.select().then(file => {
       const data = this.state.files.map(f => f.url).join(os.EOL);
-      // FIXME: Handle write errors.
+      // FIXME(Kagami): Handle write errors.
       fs.writeFileSync(file.path, data);
     });
   },
@@ -186,6 +189,16 @@ const Index = React.createClass({
   handleThreadsChange(threads) {
     this.setState({threads});
   },
+  handleAriaDisconnect() {
+    // FIXME(Kagami): Update status bar.
+    // NOTE(Kagami): We may try to respawn aria2 daemon here but too
+    // much effort. Just suggest user to restart program...
+  },
+  handleStartPauseClick() {
+    this.state.files.forEach(f => {
+      this.aria2c.call("addUri", [[f.url]]);
+    });
+  },
   render() {
     return (
       <div style={this.styles.main}>
@@ -197,6 +210,7 @@ const Index = React.createClass({
             threads={this.state.threads}
             onSetDir={this.handleSetDir}
             onThreadsChange={this.handleThreadsChange}
+            onStartPauseClick={this.handleStartPauseClick}
           />
         </div>
         <div style={this.styles.fileList}>

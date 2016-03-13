@@ -1,25 +1,28 @@
 /**
- * aria2c wrapper. Provides platform-independent Promise API.
+ * aria2c daemon wrapper, provides Promise API.
  * @module tistory/aria2c
  */
 
 import crypto from "crypto";
 import {spawn} from "child_process";
 import {getRunPath} from "../util";
+import Aria2c from "./rpc";
 if (WIN_BUILD) {
   require("../../bin/aria2c.exe");
 }
 
-class Aria2c {
-  constructor(proc) {
-    this._proc = proc;
-  }
-}
-
 export default {
-  _run(args) {
+  // FIXME(Kagami): What to do if port is in use?
+  _RPC_PORT: 11208,
+  _genRPCSecret() {
+    // 128 bit of entropy.
+    return crypto.randomBytes(16).toString("hex");
+  },
+  _run(args, secret) {
+    const port = this._RPC_PORT;
+    secret = process.env.TISTORE_DEBUG_ARIA || secret;
     if (process.env.TISTORE_DEBUG_ARIA) {
-      return Promise.resolve(new Aria2c(null));
+      return Promise.resolve(new Aria2c({port, secret}));
     }
     const runpath = getRunPath("aria2c");
     let proc;
@@ -42,7 +45,7 @@ export default {
         if (stdout.includes("listening on TCP port")) {
           proc.stdout.removeListener("data", stdoutHandler);
           proc.stderr.removeListener("data", stderrHandler);
-          resolve(new Aria2c(proc));
+          resolve(new Aria2c({proc, port, secret}));
         }
       }
       proc.stdout.on("data", stdoutHandler);
@@ -69,22 +72,15 @@ export default {
     };
     return ariap;
   },
-  _getRPCSecret() {
-    // 128 bit of entropy.
-    return crypto.randomBytes(16).toString("hex");
-  },
-  getRPCPort() {
-    // FIXME(Kagami): What to do if port is in use?
-    return 11208;
-  },
   spawn() {
+    const secret = this._genRPCSecret();
     // TODO(Kagami): Disable console logging to avoid unnecessary
     // events? We still need to somehow determine whether aria2 is
     // launched and currently we do this by parsing NOTICE log msgs.
     return this._run([
       "--enable-rpc",
-      "--rpc-secret", this._getRPCSecret(),
-      "--rpc-listen-port", this.getRPCPort(),
-    ]);
+      "--rpc-listen-port", this._RPC_PORT,
+      "--rpc-secret", secret,
+    ], secret);
   },
 };

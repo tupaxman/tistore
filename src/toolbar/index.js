@@ -88,6 +88,7 @@ export default React.createClass({
           style={this.styles.button}
           title="Start/pause downloading"
           disabled={this.isStartDisabled()}
+          onClick={this.props.onStartPauseClick}
         >
           <Icon name="play-circle-o" />
         </button>
