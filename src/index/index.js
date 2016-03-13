@@ -202,9 +202,19 @@ const Index = React.createClass({
     // much effort. Just suggest user to restart program...
   },
   handleStartPauseClick() {
-    this.state.files.forEach(f => {
-      this.aria2c.call("addUri", [[f.url]]);
-    });
+    if (this.state.downloading) {
+      const pause = !this.state.pause;
+      const method = pause ? "pauseAll" : "unpauseAll";
+      // TODO(Kagami): pausing/stopping states to be safe against
+      // possible races?
+      this.aria2c.call(method);
+      this.setState({pause});
+    } else {
+      this.setState({downloading: true});
+      this.state.files.forEach(f => {
+        this.aria2c.call("addUri", [[f.url]]);
+      });
+    }
   },
   render() {
     return (
@@ -213,6 +223,8 @@ const Index = React.createClass({
           <Toolbar
             aspawning={this.state.aspawning}
             aerror={this.state.aerror}
+            downloading={this.state.downloading}
+            pause={this.state.pause}
             files={this.state.files}
             threads={this.state.threads}
             onSetDir={this.handleSetDir}

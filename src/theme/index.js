@@ -14,15 +14,15 @@ export const ToolButton = React.createClass({
       marginRight: 3,
     },
   },
-  handleFocus() {
-    this.refs.button.blur();
+  handleKey(e) {
+    e.preventDefault();
   },
   render() {
     return (
       <button
         ref="button"
         style={this.styles.main}
-        onFocus={this.handleFocus}
+        onKeyDown={this.handleKey}
         {...this.props}
       >
         {this.props.children}

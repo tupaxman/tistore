@@ -27,26 +27,42 @@ export default React.createClass({
       cursor: "default",
     },
   },
+  baseDisabled() {
+    return (
+      this.props.aspawning ||
+      !!this.props.aerror ||
+      this.props.downloading
+    );
+  },
   isSetDirDisabled() {
-    return this.props.aspawning || !!this.props.aerror;
+    return this.baseDisabled();
   },
   isUrlDisabled() {
-    return this.props.aspawning || !!this.props.aerror;
+    return this.baseDisabled();
   },
   isCrawlDisabled() {
-    return this.props.aspawning || !!this.props.aerror || true;
+    return this.baseDisabled() || true;
   },
-  isStartDisabled() {
+  isStartPauseDisabled() {
     return (
-      this.props.aspawning || !!this.props.aerror ||
+      this.props.aspawning ||
+      !!this.props.aerror ||
       !this.props.files.length
     );
   },
   isStopDisabled() {
-    return this.props.aspawning || !!this.props.aerror || true;
+    return (
+      this.props.aspawning ||
+      !!this.props.aerror ||
+      !this.props.downloading
+    );
   },
   isThreadsDisabled() {
-    return this.props.aspawning || !!this.props.aerror;
+    // Allow to update concurrency on-the-fly.
+    return (
+      this.props.aspawning ||
+      !!this.props.aerror
+    );
   },
   handleThreadsFocus() {
     // Allow to change value only via spinners.
@@ -58,6 +74,9 @@ export default React.createClass({
     this.props.onThreadsChange(+e.target.value);
   },
   render() {
+    const startPauseIcon = (this.props.downloading && !this.props.pause)
+      ? "pause-circle-o"
+      : "play-circle-o";
     return (
       <div style={this.styles.main}>
         <ToolButton
@@ -81,10 +100,10 @@ export default React.createClass({
         </ToolButton>
         <ToolButton
           title="Start/pause downloading"
-          disabled={this.isStartDisabled()}
+          disabled={this.isStartPauseDisabled()}
           onClick={this.props.onStartPauseClick}
         >
-          <Icon name="play-circle-o" />
+          <Icon name={startPauseIcon} />
         </ToolButton>
         <ToolButton
           title="Abort current task"

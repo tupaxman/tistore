@@ -69,6 +69,7 @@ export default class Aria2c extends EventEmitter {
       this._ws.send(JSON.stringify(msg));
     });
   }
+  /** Just a little helper. */
   setOption(name, value) {
     let opt = {};
     opt[name] = value;
