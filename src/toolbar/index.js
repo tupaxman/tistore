@@ -5,18 +5,13 @@
 
 import React from "react";
 import Icon from "react-fa";
+import {ToolButton} from "../theme";
 
 export default React.createClass({
   styles: {
     main: {
       display: "flex",
       margin: 3,
-    },
-    button: {
-      width: 48,
-      fontSize: "30px",
-      cursor: "pointer",
-      marginRight: 3,
     },
     url: {
       flex: 1,
@@ -63,42 +58,38 @@ export default React.createClass({
   render() {
     return (
       <div style={this.styles.main}>
-        <button
-          style={this.styles.button}
+        <ToolButton
           title="Set output directory"
           disabled={this.isSetDirDisabled()}
           onClick={this.props.onSetDir}
         >
           <Icon name="folder-o" />
-        </button>
+        </ToolButton>
         <input
           type="text"
           style={this.styles.url}
           placeholder="Tistory blog/page URL"
           disabled={this.isUrlDisabled()}
         />
-        <button
-          style={this.styles.button}
+        <ToolButton
           title="Crawl links"
           disabled={this.isCrawlDisabled()}
         >
           <Icon name="plus" />
-        </button>
-        <button
-          style={this.styles.button}
+        </ToolButton>
+        <ToolButton
           title="Start/pause downloading"
           disabled={this.isStartDisabled()}
           onClick={this.props.onStartPauseClick}
         >
           <Icon name="play-circle-o" />
-        </button>
-        <button
-          style={this.styles.button}
+        </ToolButton>
+        <ToolButton
           title="Abort current task"
           disabled={this.isStopDisabled()}
         >
           <Icon name="stop-circle-o" />
-        </button>
+        </ToolButton>
         <input
           ref="threads"
           type="number"
