@@ -5,18 +5,16 @@
 
 import React from "react";
 import Icon from "react-fa";
+import {showSize} from "../util";
 
 export default React.createClass({
   shouldComponentUpdate(nextProps/*, nextState*/) {
     return (
-      this.props.status !== nextProps.status
+      this.props.errorMsg !== nextProps.errorMsg ||
+      this.props.status !== nextProps.status ||
+      this.props.name !== nextProps.name ||
+      this.props.size !== nextProps.size
     );
-  },
-  getLinkText() {
-    const url = this.props.url;
-    const hostIdx = url.indexOf("//") + 2;
-    // Remove nonimportant junk.
-    return url.slice(hostIdx);
   },
   getIconName() {
     const status = this.props.status;
@@ -33,17 +31,37 @@ export default React.createClass({
       return "play";
     }
   },
+  getLinkText() {
+    const url = this.props.url;
+    const hostIdx = url.indexOf("//") + 2;
+    // Remove nonimportant junk.
+    return url.slice(hostIdx);
+  },
+  handleNameClick(e) {
+    e.preventDefault();
+    global.nw.Shell.openItem(this.props.path);
+  },
+  getNameNode() {
+    if (this.props.status === "error") {
+      return this.props.errorMsg;
+    } else if (this.props.path) {
+      return <a href onClick={this.handleNameClick}>{this.props.name}</a>;
+    } else {
+      return "-";
+    }
+  },
+  getSizeText() {
+    return this.props.size != null ? showSize(this.props.size) : "";
+  },
   render() {
+    const cls = `tistore_file-row tistore_file-${this.props.status}`;
+    const icon = this.getIconName();
     return (
-      <tr className="tistore_file-row">
-        <td className="tistore_file-icon">
-          <Icon name={this.getIconName()} />
-        </td>
-        <td className="tistore_file-link">
-          {this.getLinkText()}
-        </td>
-        <td className="tistore_file-name">-</td>
-        <td className="tistore_file-size"></td>
+      <tr className={cls}>
+        <td className="tistore_file-icon"><Icon name={icon} /></td>
+        <td className="tistore_file-link">{this.getLinkText()}</td>
+        <td className="tistore_file-name">{this.getNameNode()}</td>
+        <td className="tistore_file-size">{this.getSizeText()}</td>
       </tr>
     );
   },

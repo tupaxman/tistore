@@ -5,6 +5,7 @@
 
 import fs from "fs";
 import os from "os";
+import path from "path";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./package.json.ejs";
@@ -68,6 +69,7 @@ const Index = React.createClass({
     this.setMenu();
     this.spawnAria();
   },
+  // Make sure this isn't skipped because of `shouldComponentUpdate`.
   componentDidUpdate() {
     // NOTE(Kagami): It's not possible to disable submenu on Linux (see
     // <https://github.com/nwjs/nw.js/issues/2312>), so we block all its
@@ -214,13 +216,6 @@ const Index = React.createClass({
 
     let progress = 0;
     const files = this.state.files;
-    const renderFileRow = () => {
-      this.setState({files});
-    };
-    const bumpProgress = () => {
-      this.setState({progress: ++progress});
-    };
-    // FIXME(Kagami): Clear on pause/disconnect.
     const updateStats = () => {
       this.aria2c.call("getGlobalStat").then(stats => {
         const speed = +stats.downloadSpeed;
@@ -234,9 +229,60 @@ const Index = React.createClass({
         if (numActive < 1 && numWaiting < 1) {
           this.setState({downloading: false, pause: false, completed: true});
         } else {
+          // FIXME(Kagami): Clear on pause/disconnect.
           setTimeout(updateStats, 1000);
         }
       });
+    };
+    const flushState = () => {
+      this.setState({files});
+    };
+    const manageFile = (file) => {
+      this.aria2c.getInfo(file.gid).then(info => {
+        const fpath = info.files[0].path;
+        if (file.status === "error") {
+          file.errorMsg = info.errorMessage;
+          // Remove junk.
+          try {
+            fs.unlinkSync(fpath);
+          } catch(e) {
+            /* skip */
+          }
+          try {
+            fs.unlinkSync(fpath + ".aria2");
+          } catch(e) {
+            /* skip */
+          }
+        } else {
+          file.size = +info.totalLength;
+          const fdir = path.dirname(fpath);
+          let fname = path.basename(fpath);
+          // Fix digit extensions (a.jpg.2 -> a-2.jpg).
+          fname = fname.replace(/\.([^.]+)\.(\d+)$/, "-$2.$1");
+          // Remove percent encoding (we need this because Tistory
+          // doesn't specify encoding of Content-Disposition header, see
+          // <https://github.com/tatsuhiro-t/aria2/issues/425> for
+          // details).
+          fname = decodeURIComponent(fname);
+          const fpath2 = path.join(fdir, fname);
+          try {
+            fs.renameSync(fpath, fpath2);
+            file.name = fname;
+            file.path = fpath2;
+          } catch(e) {
+            /* skip */
+          }
+        }
+        flushState();
+      });
+    };
+    const removeListeners = (file) => {
+      // Allow GC to free memory.
+      this.aria2c.removeAllListeners(`start.${file.gid}`);
+      this.aria2c.removeAllListeners(`pause.${file.gid}`);
+    };
+    const bumpProgress = () => {
+      this.setState({progress: ++progress});
     };
 
     // Start!
@@ -244,34 +290,28 @@ const Index = React.createClass({
     files.forEach(file => {
       // TODO(Kagami): Handle addUri errors.
       this.aria2c.add(file.url).then(gid => {
-        const removeListeners = () => {
-          // Allow GC to free memory.
-          this.aria2c.removeAllListeners(`start.${gid}`);
-          this.aria2c.removeAllListeners(`pause.${gid}`);
-        };
-
         file.gid = gid;
         // Happen each time user clicks start/pause button.
         this.aria2c.on(`start.${gid}`, () => {
           file.status = "start";
-          renderFileRow();
+          flushState();
         });
         this.aria2c.on(`pause.${gid}`, () => {
           file.status = "pause";
-          renderFileRow();
+          flushState();
         });
         // These events should happen only once.
         this.aria2c.once(`complete.${gid}`, () => {
           file.status = "complete";
-          renderFileRow();
-          removeListeners();
+          removeListeners(file);
           bumpProgress();
+          manageFile(file);
         });
         this.aria2c.once(`error.${gid}`, () => {
           file.status = "error";
-          renderFileRow();
-          removeListeners();
+          removeListeners(file);
           bumpProgress();
+          manageFile(file);
         });
       });
     });

@@ -15,6 +15,8 @@ export default React.createClass({
       cursor: "default",
       fontSize: "14px",
       tableLayout: "fixed",
+      whiteSpace: "nowrap",
+      wordBreak: "break-all",
     },
   },
   render() {

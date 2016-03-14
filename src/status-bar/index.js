@@ -20,9 +20,6 @@ export default React.createClass({
     label: {
       paddingRight: 8,
     },
-    outDir: {
-      textDecoration: "none",
-    },
     spawning: {
       color: "blue",
     },
@@ -50,7 +47,7 @@ export default React.createClass({
   },
   _getOutDirNode() {
     return (
-      <a href style={this.styles.outDir} onClick={this.handleOutDirClick}>
+      <a href onClick={this.handleOutDirClick}>
         <Icon name="folder-o" />
         <span> {this.props.outDir}</span>
       </a>

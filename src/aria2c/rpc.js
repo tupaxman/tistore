@@ -96,4 +96,8 @@ export default class extends EventEmitter {
   forceRemove(gid) {
     return this.call("forceRemove", [gid]);
   }
+  getInfo(gid) {
+    const keys = ["errorMessage", "totalLength", "files"];
+    return this.call("tellStatus", [gid, keys]);
+  }
 }
