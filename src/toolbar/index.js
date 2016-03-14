@@ -28,42 +28,42 @@ export default React.createClass({
     },
   },
   baseDisabled() {
+    // All error states, normally everything should be disabled by this.
     return (
       this.props.aspawning ||
       !!this.props.aerror ||
-      this.props.downloading
+      this.props.disconnected
     );
   },
+  commonDisabled() {
+    // All setting buttons.
+    return this.baseDisabled() || this.props.downloading;
+  },
   isSetDirDisabled() {
-    return this.baseDisabled();
+    return this.commonDisabled();
   },
   isUrlDisabled() {
-    return this.baseDisabled();
+    return this.commonDisabled();
   },
   isCrawlDisabled() {
-    return this.baseDisabled() || true;
+    return this.commonDisabled() || true;
   },
   isStartPauseDisabled() {
     return (
-      this.props.aspawning ||
-      !!this.props.aerror ||
+      this.baseDisabled() ||
       this.props.completed ||
       !this.props.files.length
     );
   },
   isStopDisabled() {
     return (
-      this.props.aspawning ||
-      !!this.props.aerror ||
+      this.baseDisabled() ||
       !this.props.downloading
     );
   },
   isThreadsDisabled() {
     // Allow to update concurrence level on-the-fly.
-    return (
-      this.props.aspawning ||
-      !!this.props.aerror
-    );
+    return this.baseDisabled();
   },
   handleThreadsFocus() {
     // Allow to change value only via spinners.

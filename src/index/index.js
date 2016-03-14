@@ -74,7 +74,12 @@ const Index = React.createClass({
     // subelements instead.
     // NOTE(Kagami): There were some issues with dynamic updates on
     // Windows, see: <https://github.com/nwjs/nw.js/issues/2519>.
-    const isReady = !this.state.aspawning && !this.state.aerror;
+    const isReady = !(
+      this.state.aspawning ||
+      this.state.aerror ||
+      this.state.disconnected ||
+      this.state.downloading
+    );
     const hasLinks = !!this.state.files.length;
     this.addLinksItem.enabled = isReady;
     this.exportLinksItem.enabled = isReady && hasLinks;
@@ -159,13 +164,13 @@ const Index = React.createClass({
     this.refs.openFile.select().then(f => this.handleListLoad(f.path));
   },
   handleListLoad(fpath) {
-    // FIXME(Kagami): Handle read errors.
+    // Just ignore any read errors.
     const data = fs.readFileSync(fpath, {encoding: "utf-8"});
     data.trim().split(/\r?\n/).forEach(line => {
       line = line.trim();
       // Should be enough for now. Leaving to aria2 all remaining
       // validation.
-      if (line.startsWith("http://") || line.startsWith("https://")) {
+      if (line.match(/^https?:\/\//)) {
         this.fileSet.add({url: line});
       }
     });
@@ -174,7 +179,7 @@ const Index = React.createClass({
   handleLinksExport() {
     this.refs.saveFile.select().then(file => {
       const data = this.state.files.map(f => f.url).join(os.EOL);
-      // FIXME(Kagami): Handle write errors.
+      // TODO(Kagami): Handle write errors.
       fs.writeFileSync(file.path, data);
     });
   },
@@ -200,9 +205,9 @@ const Index = React.createClass({
     this.setState({threads});
   },
   handleAriaDisconnect() {
-    // FIXME(Kagami): Update status bar.
-    // NOTE(Kagami): We may try to respawn aria2 daemon here but too
-    // much effort. Just suggest user to restart program...
+    // NOTE(Kagami): We can respawn aria2 daemon here but too much
+    // effort. Just suggest user to restart program...
+    this.setState({disconnected: true});
   },
   runDownload() {
     if (this.state.downloading) return;
@@ -215,6 +220,7 @@ const Index = React.createClass({
     const bumpProgress = () => {
       this.setState({progress: ++progress});
     };
+    // FIXME(Kagami): Clear on pause/disconnect.
     const updateStats = () => {
       this.aria2c.call("getGlobalStat").then(stats => {
         const speed = +stats.downloadSpeed;
@@ -236,6 +242,7 @@ const Index = React.createClass({
     // Start!
     this.setState({downloading: true, speed: 0, progress});
     files.forEach(file => {
+      // TODO(Kagami): Handle addUri errors.
       this.aria2c.add(file.url).then(gid => {
         const removeListeners = () => {
           // Allow GC to free memory.
@@ -266,8 +273,6 @@ const Index = React.createClass({
           removeListeners();
           bumpProgress();
         });
-      }, () => {
-        // FIXME(Kagami): Handle addUri errors.
       });
     });
     updateStats();
@@ -276,7 +281,7 @@ const Index = React.createClass({
     if (this.state.downloading) {
       const pause = !this.state.pause;
       const method = pause ? "pauseAll" : "unpauseAll";
-      // FIXME(Kagami): Use pausing/stopping states to be safe against
+      // TODO(Kagami): Use pausing/stopping states to be safe against
       // possible races?
       this.aria2c.call(method);
       this.setState({pause});
@@ -304,6 +309,7 @@ const Index = React.createClass({
             downloading={this.state.downloading}
             pause={this.state.pause}
             completed={this.state.completed}
+            disconnected={this.state.disconnected}
             files={this.state.files}
             threads={this.state.threads}
             onSetDir={this.handleSetDir}
@@ -324,6 +330,7 @@ const Index = React.createClass({
             completed={this.state.completed}
             progress={this.state.progress}
             speed={this.state.speed}
+            disconnected={this.state.disconnected}
             files={this.state.files}
             outDir={this.state.outDir}
           />

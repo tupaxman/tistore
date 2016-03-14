@@ -48,12 +48,20 @@ export default React.createClass({
     // `openItem` doesn't work with directory on Linux.
     global.nw.Shell.openExternal("file://" + this.props.outDir);
   },
-  getOutDirNode() {
+  _getOutDirNode() {
     return (
       <a href style={this.styles.outDir} onClick={this.handleOutDirClick}>
         <Icon name="folder-o" />
         <span> {this.props.outDir}</span>
       </a>
+    );
+  },
+  getAriaErrorNode() {
+    return (
+      <span style={this.styles.error}>
+        <Icon name="warning" />
+        <span> {this.props.aerror.message}</span>
+      </span>
     );
   },
   getAriaSpawningNode() {
@@ -64,11 +72,11 @@ export default React.createClass({
       </span>
     );
   },
-  getAriaErrorNode() {
+  getDisconnectedNode() {
     return (
       <span style={this.styles.error}>
         <Icon name="warning" />
-        <span> {this.props.aerror.message}</span>
+        <span> Lost connection to aria2c daemon. Restart program.</span>
       </span>
     );
   },
@@ -91,7 +99,7 @@ export default React.createClass({
     return (
       <span>
         <span style={this.styles.label}>Download complete into:</span>
-        {this.getOutDirNode()}
+        {this._getOutDirNode()}
       </span>
     );
   },
@@ -102,7 +110,7 @@ export default React.createClass({
       <span>
         {len} link{s} loaded, ready to start.
         <span style={this.styles.label}> Saving to:</span>
-        {this.getOutDirNode()}
+        {this._getOutDirNode()}
       </span>
     );
   },
@@ -112,6 +120,8 @@ export default React.createClass({
   getStatusNode() {
     if (this.props.aerror) {
       return this.getAriaErrorNode();
+    } else if (this.props.disconnected) {
+      return this.getDisconnectedNode();
     } else if (this.props.aspawning) {
       return this.getAriaSpawningNode();
     } else if (this.props.pause) {

@@ -15,6 +15,7 @@ export default React.createClass({
   getLinkText() {
     const url = this.props.url;
     const hostIdx = url.indexOf("//") + 2;
+    // Remove nonimportant junk.
     return url.slice(hostIdx);
   },
   getIconName() {
