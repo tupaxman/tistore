@@ -5,7 +5,7 @@
 
 import EventEmitter from "events";
 
-export default class Aria2c extends EventEmitter {
+export default class extends EventEmitter {
   constructor({proc, port, secret}) {
     super();
     this._proc = proc;
@@ -18,6 +18,16 @@ export default class Aria2c extends EventEmitter {
     this._id = 0;
     this._callbacks = Object.create(null);
   }
+  get _METHOD_TO_EVENT() {
+    return {
+      "aria2.onDownloadStart": "start",
+      "aria2.onDownloadPause": "pause",
+      "aria2.onDownloadStop": "stop",
+      "aria2.onDownloadComplete": "complete",
+      "aria2.onDownloadError": "error",
+      "aria2.onBtDownloadComplete": "btcomplete",
+    };
+  }
   connect() {
     return new Promise((resolve/*, reject*/) => {
       if (this._ws) throw new Error("Already connected");
@@ -29,9 +39,14 @@ export default class Aria2c extends EventEmitter {
         const msg = JSON.parse(e.data);
         console.log("MSG<-", msg);
         const id = msg.id;
-        const cb = this._callbacks[id];
-        // TODO(Kagami): Notifications.
-        if (cb) {
+        if (id == null) {
+          const ev = this._METHOD_TO_EVENT[msg.method];
+          const gid = msg.params[0].gid;
+          const event = ev + "." + gid;
+          this.emit(event);
+        } else {
+          const cb = this._callbacks[id];
+          if (!cb) return;
           if (msg.error) {
             let err = new Error(msg.error.message);
             err.code = msg.error.code;
@@ -69,10 +84,13 @@ export default class Aria2c extends EventEmitter {
       this._ws.send(JSON.stringify(msg));
     });
   }
-  /** Just a little helper. */
+  /** Helper aliases. */
   setOption(name, value) {
     let opt = {};
     opt[name] = value;
     return this.call("changeGlobalOption", [opt]);
+  }
+  add(url) {
+    return this.call("addUri", [[url]]);
   }
 }

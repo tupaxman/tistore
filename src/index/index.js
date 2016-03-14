@@ -201,6 +201,44 @@ const Index = React.createClass({
     // NOTE(Kagami): We may try to respawn aria2 daemon here but too
     // much effort. Just suggest user to restart program...
   },
+  runDownload() {
+    if (this.state.downloading) return;
+    this.setState({downloading: true});
+    this.state.files.forEach(file => {
+      this.aria2c.add(file.url).then(gid => {
+
+        const updateUI = () => {
+          this.setState({files: this.state.files});
+        };
+        const removeListeners = () => {
+          this.aria2c.removeAllListeners(`start.${gid}`);
+          this.aria2c.removeAllListeners(`pause.${gid}`);
+        };
+
+        this.aria2c.on(`start.${gid}`, () => {
+          file.status = "start";
+          updateUI();
+        });
+        this.aria2c.on(`pause.${gid}`, () => {
+          file.status = "pause";
+          updateUI();
+        });
+        this.aria2c.once(`complete.${gid}`, () => {
+          file.status = "complete";
+          updateUI();
+          removeListeners();
+        });
+        this.aria2c.once(`error.${gid}`, () => {
+          file.status = "error";
+          updateUI();
+          removeListeners();
+        });
+
+      }, () => {
+        // FIXME(Kagami): Handle addUri errors.
+      });
+    });
+  },
   handleStartPauseClick() {
     if (this.state.downloading) {
       const pause = !this.state.pause;
@@ -210,10 +248,7 @@ const Index = React.createClass({
       this.aria2c.call(method);
       this.setState({pause});
     } else {
-      this.setState({downloading: true});
-      this.state.files.forEach(f => {
-        this.aria2c.call("addUri", [[f.url]]);
-      });
+      this.runDownload();
     }
   },
   render() {
