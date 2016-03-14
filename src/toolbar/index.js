@@ -47,6 +47,7 @@ export default React.createClass({
     return (
       this.props.aspawning ||
       !!this.props.aerror ||
+      this.props.completed ||
       !this.props.files.length
     );
   },
@@ -58,7 +59,7 @@ export default React.createClass({
     );
   },
   isThreadsDisabled() {
-    // Allow to update concurrency on-the-fly.
+    // Allow to update concurrence level on-the-fly.
     return (
       this.props.aspawning ||
       !!this.props.aerror

@@ -206,12 +206,37 @@ const Index = React.createClass({
   },
   runDownload() {
     if (this.state.downloading) return;
-    this.setState({downloading: true});
-    this.state.files.forEach(file => {
+
+    let progress = 0;
+    const files = this.state.files;
+    const renderFileRow = () => {
+      this.setState({files});
+    };
+    const bumpProgress = () => {
+      this.setState({progress: ++progress});
+    };
+    const updateStats = () => {
+      this.aria2c.call("getGlobalStat").then(stats => {
+        const speed = +stats.downloadSpeed;
+        this.setState({speed});
+        const numActive = +stats.numActive;
+        const numWaiting = +stats.numWaiting;
+        // NOTE(Kagami): There might be a little lag between last file
+        // was downloaded and this request completed, but checking for
+        // actual status of aria2 rather than our internal status should
+        // be more robust.
+        if (numActive < 1 && numWaiting < 1) {
+          this.setState({downloading: false, pause: false, completed: true});
+        } else {
+          setTimeout(updateStats, 1000);
+        }
+      });
+    };
+
+    // Start!
+    this.setState({downloading: true, speed: 0, progress});
+    files.forEach(file => {
       this.aria2c.add(file.url).then(gid => {
-        const updateUI = () => {
-          this.setState({files: this.state.files});
-        };
         const removeListeners = () => {
           // Allow GC to free memory.
           this.aria2c.removeAllListeners(`start.${gid}`);
@@ -222,27 +247,30 @@ const Index = React.createClass({
         // Happen each time user clicks start/pause button.
         this.aria2c.on(`start.${gid}`, () => {
           file.status = "start";
-          updateUI();
+          renderFileRow();
         });
         this.aria2c.on(`pause.${gid}`, () => {
           file.status = "pause";
-          updateUI();
+          renderFileRow();
         });
         // These events should happen only once.
         this.aria2c.once(`complete.${gid}`, () => {
           file.status = "complete";
-          updateUI();
+          renderFileRow();
           removeListeners();
+          bumpProgress();
         });
         this.aria2c.once(`error.${gid}`, () => {
           file.status = "error";
-          updateUI();
+          renderFileRow();
           removeListeners();
+          bumpProgress();
         });
       }, () => {
         // FIXME(Kagami): Handle addUri errors.
       });
     });
+    updateStats();
   },
   handleStartPauseClick() {
     if (this.state.downloading) {
@@ -275,6 +303,7 @@ const Index = React.createClass({
             aerror={this.state.aerror}
             downloading={this.state.downloading}
             pause={this.state.pause}
+            completed={this.state.completed}
             files={this.state.files}
             threads={this.state.threads}
             onSetDir={this.handleSetDir}
@@ -288,10 +317,15 @@ const Index = React.createClass({
         </div>
         <div>
           <StatusBar
-            files={this.state.files}
-            outDir={this.state.outDir}
             aspawning={this.state.aspawning}
             aerror={this.state.aerror}
+            downloading={this.state.downloading}
+            pause={this.state.pause}
+            completed={this.state.completed}
+            progress={this.state.progress}
+            speed={this.state.speed}
+            files={this.state.files}
+            outDir={this.state.outDir}
           />
         </div>
         <FileDialog ref="openFile" accept=".txt" />
