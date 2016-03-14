@@ -108,6 +108,7 @@ export default React.createClass({
         <ToolButton
           title="Abort current task"
           disabled={this.isStopDisabled()}
+          onClick={this.props.onStopClick}
         >
           <Icon name="stop-circle-o" />
         </ToolButton>

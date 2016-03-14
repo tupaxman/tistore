@@ -59,6 +59,9 @@ const Index = React.createClass({
     let mainWindow = window.nw.Window.get();
     mainWindow.on("close", () => {
       if (confirm("Are you sure you want to exit?")) {
+        // NOTE(Kagami): aria2 process will be killed by onexit handler;
+        // it should be rather safe since we send SIGTERM and aria2
+        // should do all needed cleanup before exit.
         mainWindow.close(true);
       }
     });
@@ -206,15 +209,17 @@ const Index = React.createClass({
     this.setState({downloading: true});
     this.state.files.forEach(file => {
       this.aria2c.add(file.url).then(gid => {
-
         const updateUI = () => {
           this.setState({files: this.state.files});
         };
         const removeListeners = () => {
+          // Allow GC to free memory.
           this.aria2c.removeAllListeners(`start.${gid}`);
           this.aria2c.removeAllListeners(`pause.${gid}`);
         };
 
+        file.gid = gid;
+        // Happen each time user clicks start/pause button.
         this.aria2c.on(`start.${gid}`, () => {
           file.status = "start";
           updateUI();
@@ -223,6 +228,7 @@ const Index = React.createClass({
           file.status = "pause";
           updateUI();
         });
+        // These events should happen only once.
         this.aria2c.once(`complete.${gid}`, () => {
           file.status = "complete";
           updateUI();
@@ -233,7 +239,6 @@ const Index = React.createClass({
           updateUI();
           removeListeners();
         });
-
       }, () => {
         // FIXME(Kagami): Handle addUri errors.
       });
@@ -243,12 +248,22 @@ const Index = React.createClass({
     if (this.state.downloading) {
       const pause = !this.state.pause;
       const method = pause ? "pauseAll" : "unpauseAll";
-      // TODO(Kagami): pausing/stopping states to be safe against
+      // FIXME(Kagami): Use pausing/stopping states to be safe against
       // possible races?
       this.aria2c.call(method);
       this.setState({pause});
     } else {
       this.runDownload();
+    }
+  },
+  handleStopClick() {
+    if (confirm("Are you sure you want to abort?")) {
+      if (this.state.downloading) {
+        const files = this.state.files;
+        files.forEach(f => this.aria2c.forceRemove(f.gid));
+        this.fileSet.clear();
+        this.setState({downloading: false, pause: false, files});
+      }
     }
   },
   render() {
@@ -265,6 +280,7 @@ const Index = React.createClass({
             onSetDir={this.handleSetDir}
             onThreadsChange={this.handleThreadsChange}
             onStartPauseClick={this.handleStartPauseClick}
+            onStopClick={this.handleStopClick}
           />
         </div>
         <div style={this.styles.fileList}>

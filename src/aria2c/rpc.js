@@ -93,4 +93,7 @@ export default class extends EventEmitter {
   add(url) {
     return this.call("addUri", [[url]]);
   }
+  forceRemove(gid) {
+    return this.call("forceRemove", [gid]);
+  }
 }
