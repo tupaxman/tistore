@@ -163,7 +163,14 @@ const Index = React.createClass({
       borderWidth: "1px 0",
     },
   },
+  clearCompleted() {
+    if (this.state.completed) {
+      this.fileSet.clear();
+      this.setState({completed: false});
+    }
+  },
   handleLinksAdd() {
+    this.clearCompleted();
     this.refs.openFile.select().then(f => this.handleListLoad(f.path));
   },
   handleListLoad(fpath) {
@@ -188,13 +195,14 @@ const Index = React.createClass({
   },
   handleLinksClear() {
     this.fileSet.clear();
-    this.setState({files: this.fileSet.list});
+    this.setState({completed: false});
   },
   setDir(outDir) {
     this.aria2c.setOption("dir", outDir);
     this.setState({outDir});
   },
   handleSetDir() {
+    this.clearCompleted();
     this.refs.openDir.select().then(d => this.setDir(d.path));
   },
   handleAboutClick() {
