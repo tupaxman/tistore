@@ -1,6 +1,6 @@
 /**
  * aria2c JSON-RPC client, provides Promise API.
- * @module tistory/aria2c/rpc
+ * @module tistore/aria2c/rpc
  */
 
 import EventEmitter from "events";
@@ -37,7 +37,7 @@ export default class extends EventEmitter {
       };
       ws.onmessage = e => {
         const msg = JSON.parse(e.data);
-        console.log("MSG<-", msg);
+        // console.log("MSG<-", msg);
         const id = msg.id;
         if (id == null) {
           const ev = this._METHOD_TO_EVENT[msg.method];
@@ -78,7 +78,7 @@ export default class extends EventEmitter {
       method: `aria2.${method}`,
       id, params,
     };
-    console.log("MSG->", msg);
+    // console.log("MSG->", msg);
     return new Promise((resolve, reject) => {
       this._callbacks[id] = [resolve, reject];
       this._ws.send(JSON.stringify(msg));
@@ -87,7 +87,7 @@ export default class extends EventEmitter {
   /** Helper aliases. */
   setOption(name, value) {
     let opt = {};
-    opt[name] = value;
+    opt[name] = value.toString();
     return this.call("changeGlobalOption", [opt]);
   }
   add(url) {

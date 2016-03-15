@@ -19,6 +19,7 @@ import Toolbar from "../toolbar";
 import FileList from "../file-list";
 import StatusBar from "../status-bar";
 import FileDialog from "../file-dialog";
+import Tistory from "../tistory";
 import {safeRenameSync} from "../util";
 import pkg from "../../package.json";
 
@@ -46,8 +47,9 @@ const Index = React.createClass({
     const outDir = process.env.TISTORE_DEBUG_DIR || os.tmpdir();
     return {
       outDir,
+      url: "",
       threads: 16,
-      aspawning: true,
+      spawning: true,
       files: this.fileSet.list,
     };
   },
@@ -78,7 +80,7 @@ const Index = React.createClass({
     // NOTE(Kagami): There were some issues with dynamic updates on
     // Windows, see: <https://github.com/nwjs/nw.js/issues/2519>.
     const isReady = !(
-      this.state.aspawning ||
+      this.state.spawning ||
       this.state.aerror ||
       this.state.disconnected ||
       this.state.downloading
@@ -128,7 +130,7 @@ const Index = React.createClass({
   },
   spawnAria() {
     const ariap = Aria2s.spawn();
-    process.addListener("exit", () => {
+    process.on("exit", () => {
       // Always stop spawned process on exit.
       // TODO(Kagami): Unfortunately nw doesn't fire this event on
       // "Reload app" thus leaving aria2 process untouched.
@@ -141,13 +143,13 @@ const Index = React.createClass({
     ariap.then(aria2c => {
       aria2c.on("close", this.handleAriaDisconnect);
       return aria2c.connect().then(() => {
-        this.setState({aspawning: false});
+        this.setState({spawning: false});
         this.aria2c = aria2c;
         this.setDir(this.state.outDir);
         this.handleThreadsChange(this.state.threads);
       });
     }).catch(err => {
-      this.setState({aspawning: false, aerror: err});
+      this.setState({spawning: false, aerror: err});
     });
   },
   styles: {
@@ -211,6 +213,9 @@ const Index = React.createClass({
   handleSiteClick() {
     global.nw.Shell.openExternal(pkg.homepage);
   },
+  handleURLChange(url) {
+    this.setState({url});
+  },
   handleThreadsChange(threads) {
     this.aria2c.setOption("max-concurrent-downloads", threads);
     this.setState({threads});
@@ -219,6 +224,32 @@ const Index = React.createClass({
     // NOTE(Kagami): We can respawn aria2 daemon here but too much
     // effort. Just suggest user to restart program...
     this.setState({disconnected: true});
+  },
+  handleCrawlUpdate({links, currentPage, totalPages}) {
+    links.forEach(url => this.fileSet.add({url}));
+    this.setState({currentPage, totalPages});
+  },
+  handleCrawlClick() {
+    this.clearCompleted();
+    let prePages, method, opts;
+    if (Tistory.isBlog(this.state.url)) {
+      prePages = "?";
+      method = "crawlBlog";
+      opts = {threads: this.state.threads, onUpdate: this.handleCrawlUpdate};
+    } else {
+      prePages = 1;
+      method = "crawlPage";
+    }
+    this.setState({crawling: true, currentPage: 0, totalPages: prePages});
+    // TODO(Kagami): Allow to pause/stop crawling.
+    Tistory[method](this.state.url, opts).then(links => {
+      links.forEach(url => this.fileSet.add({url}));
+      this.setState({crawling: false, url: ""});
+      this.runDownload();
+    }, () => {
+      // FIXME(Kagami): Display crawling errors.
+      this.setState({crawling: false, url: ""});
+    });
   },
   runDownload() {
     if (this.state.downloading) return;
@@ -363,18 +394,22 @@ const Index = React.createClass({
       <div style={this.styles.main}>
         <div>
           <Toolbar
-            aspawning={this.state.aspawning}
+            spawning={this.state.spawning}
             aerror={this.state.aerror}
             downloading={this.state.downloading}
             pause={this.state.pause}
             completed={this.state.completed}
             disconnected={this.state.disconnected}
-            files={this.state.files}
+            crawling={this.state.crawling}
+            url={this.state.url}
             threads={this.state.threads}
+            files={this.state.files}
             onSetDir={this.handleSetDir}
-            onThreadsChange={this.handleThreadsChange}
+            onURLChange={this.handleURLChange}
+            onCrawlClick={this.handleCrawlClick}
             onStartPauseClick={this.handleStartPauseClick}
             onStopClick={this.handleStopClick}
+            onThreadsChange={this.handleThreadsChange}
           />
         </div>
         <div style={this.styles.fileList}>
@@ -382,7 +417,7 @@ const Index = React.createClass({
         </div>
         <div>
           <StatusBar
-            aspawning={this.state.aspawning}
+            spawning={this.state.spawning}
             aerror={this.state.aerror}
             downloading={this.state.downloading}
             pause={this.state.pause}
@@ -390,6 +425,9 @@ const Index = React.createClass({
             progress={this.state.progress}
             speed={this.state.speed}
             disconnected={this.state.disconnected}
+            crawling={this.state.crawling}
+            currentPage={this.state.currentPage}
+            totalPages={this.state.totalPages}
             files={this.state.files}
             outDir={this.state.outDir}
           />
@@ -402,4 +440,4 @@ const Index = React.createClass({
   },
 });
 
-ReactDOM.render(<Index/>, document.getElementById("tistore-index"));
+ReactDOM.render(<Index/>, document.getElementById("tistore_index"));

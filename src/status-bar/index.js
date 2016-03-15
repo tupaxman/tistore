@@ -61,19 +61,19 @@ export default React.createClass({
       </span>
     );
   },
-  getAriaSpawningNode() {
-    return (
-      <span style={this.styles.spawning}>
-        <Icon pulse name="spinner" />
-        <span> Spawning aria2c daemon…</span>
-      </span>
-    );
-  },
   getDisconnectedNode() {
     return (
       <span style={this.styles.error}>
         <Icon name="warning" />
         <span> Lost connection to aria2c daemon. Restart program.</span>
+      </span>
+    );
+  },
+  getSpawningNode() {
+    return (
+      <span style={this.styles.spawning}>
+        <Icon pulse name="spinner" />
+        <span> Spawning aria2c daemon…</span>
       </span>
     );
   },
@@ -100,6 +100,13 @@ export default React.createClass({
       </span>
     );
   },
+  getCrawlingNode() {
+    return (
+      <span>
+        <span>Crawling: {this.props.currentPage}/{this.props.totalPages}</span>
+      </span>
+    );
+  },
   getPreRunNode() {
     const len = this.props.files.length;
     const s = len > 1 ? "s" : "";
@@ -119,14 +126,16 @@ export default React.createClass({
       return this.getAriaErrorNode();
     } else if (this.props.disconnected) {
       return this.getDisconnectedNode();
-    } else if (this.props.aspawning) {
-      return this.getAriaSpawningNode();
+    } else if (this.props.spawning) {
+      return this.getSpawningNode();
     } else if (this.props.pause) {
       return this.getPauseNode();
     } else if (this.props.downloading) {
       return this.getDownloadingNode();
     } else if (this.props.completed) {
       return this.getCompletedNode();
+    } else if (this.props.crawling) {
+      return this.getCrawlingNode();
     } else if (this.props.files.length) {
       return this.getPreRunNode();
     } else {

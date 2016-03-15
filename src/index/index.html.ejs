@@ -12,7 +12,7 @@
                font-weight:bold;font-style:normal}
     @font-face{font-family:"Open Sans";src:url(opensans-italic.woff2) format("woff2");
                font-weight:normal;font-style:italic}
-    html,body,#tistore-index{height:100%;margin:0;background-color:#eee;font-family:"Open Sans",sans-serif}
+    html,body,#tistore_index{height:100%;margin:0;background-color:#eee;font-family:"Open Sans",sans-serif}
     input:focus,button:focus{outline:none}
     button:disabled{cursor:auto!important}
     input[type=number]::-webkit-inner-spin-button,
@@ -35,10 +35,13 @@
     .tistore_file-row .fa-hourglass-o{color:blue}
     .tistore_file-row .fa-check{color:green}
     .tistore_file-row .fa-warning{color:red}
+    /* FIXME(Kagami): Typical React dynamic hacks. */
+    .tistore_url:focus{border-color:#000!important}
+    .tistore_url-invalid{border-color:#f00!important;color:#f00}
   </style>
 </head>
 <body>
-  <div id="tistore-index"></div>
+  <div id="tistore_index"></div>
   <script src="index.js"></script>
 </body>
 </html>

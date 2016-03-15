@@ -1,6 +1,6 @@
 /**
  * aria2c daemon wrapper, provides Promise API.
- * @module tistory/aria2c
+ * @module tistore/aria2c
  */
 
 import crypto from "crypto";

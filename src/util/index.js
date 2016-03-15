@@ -78,6 +78,7 @@ export function safeRenameSync(path1, path2) {
     return true;
   }
 
+  if (path1 === path2) return path2;
   if (tryRename(path1, path2)) return path2;
 
   const fdir = path.dirname(path2);

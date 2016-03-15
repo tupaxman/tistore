@@ -6,6 +6,7 @@
 import React from "react";
 import Icon from "react-fa";
 import {ToolButton} from "../theme";
+import Tistory from "../tistory";
 
 export default React.createClass({
   styles: {
@@ -16,9 +17,11 @@ export default React.createClass({
     url: {
       flex: 1,
       fontSize: "22px",
-      height: 40,
       marginRight: 3,
-      padding: 3,
+      padding: 4,
+      height: 50,
+      boxSizing: "border-box",
+      border: "1px solid #a9a9a9",
     },
     threads: {
       width: 50,
@@ -30,40 +33,54 @@ export default React.createClass({
   baseDisabled() {
     // All error states, normally everything should be disabled by this.
     return (
-      this.props.aspawning ||
+      this.props.spawning ||
       !!this.props.aerror ||
       this.props.disconnected
     );
   },
   commonDisabled() {
     // All setting buttons.
-    return this.baseDisabled() || this.props.downloading;
+    return this.baseDisabled() || this.props.downloading || this.props.crawling;
   },
   isSetDirDisabled() {
     return this.commonDisabled();
   },
-  isUrlDisabled() {
+  isURLInvalid() {
+    return !Tistory.isBlog(this.props.url) && !Tistory.isPage(this.props.url);
+  },
+  isURLDisabled() {
     return this.commonDisabled();
   },
+  getURLClassName() {
+    return (this.props.url && this.isURLInvalid())
+      ? "tistore_url-invalid"
+      : "tistore_url";
+  },
   isCrawlDisabled() {
-    return this.commonDisabled() || true;
+    return this.commonDisabled() || this.isURLInvalid();
   },
   isStartPauseDisabled() {
     return (
       this.baseDisabled() ||
       this.props.completed ||
+      this.props.crawling ||
       !this.props.files.length
     );
   },
   isStopDisabled() {
-    return (
-      this.baseDisabled() ||
-      !this.props.downloading
-    );
+    return this.baseDisabled() || !this.props.downloading;
   },
   isThreadsDisabled() {
-    // Allow to update concurrence level on-the-fly.
-    return this.baseDisabled();
+    // Allow to update concurrency level on-the-fly when downloading.
+    return this.baseDisabled() || this.props.crawling;
+  },
+  handleURLKey(e) {
+    if (e.which === 13 && !this.isCrawlDisabled()) {
+      this.props.onCrawlClick();
+    }
+  },
+  handleURLChange(e) {
+    this.props.onURLChange(e.target.value);
   },
   handleThreadsFocus() {
     // Allow to change value only via spinners.
@@ -75,6 +92,7 @@ export default React.createClass({
     this.props.onThreadsChange(+e.target.value);
   },
   render() {
+    // Don't allow to pause crawling yet.
     const startPauseIcon = (this.props.downloading && !this.props.pause)
       ? "pause-circle-o"
       : "play-circle-o";
@@ -90,12 +108,17 @@ export default React.createClass({
         <input
           type="text"
           style={this.styles.url}
+          className={this.getURLClassName()}
           placeholder="Tistory blog/page URL"
-          disabled={this.isUrlDisabled()}
+          disabled={this.isURLDisabled()}
+          onKeyPress={this.handleURLKey}
+          onChange={this.handleURLChange}
+          value={this.props.url}
         />
         <ToolButton
           title="Crawl links"
           disabled={this.isCrawlDisabled()}
+          onClick={this.props.onCrawlClick}
         >
           <Icon name="plus" />
         </ToolButton>
