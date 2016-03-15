@@ -2,6 +2,8 @@
 
 tistore is a simple GUI application for grabbing photos from Tistory blogs. It can grab entire blog, separate post or use a list of URLs and download them in parallel using blazingly fast [aria2](https://github.com/tatsuhiro-t/aria2) backend. Original filenames (including Hangul) are preserved.
 
+![](https://raw.githubusercontent.com/Kagami/tistore/assets/tistore.png)
+
 ## Install
 
 For the first time you will need to download `.7z` archive corresponding to your platform. If you want to update to newer version of tistore, you may however get only appropriate `.nw` file and replace `app.nw` in unpacked directory of full build. (`.nw` files contain the actual application, but you need NW.js environment in order to run them.)
