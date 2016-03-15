@@ -147,6 +147,7 @@ const Index = React.createClass({
         this.aria2c = aria2c;
         this.setDir(this.state.outDir);
         this.handleThreadsChange(this.state.threads);
+        this.refs.toolbar.focusURL();
       });
     }).catch(err => {
       this.setState({spawning: false, aerror: err});
@@ -394,6 +395,7 @@ const Index = React.createClass({
       <div style={this.styles.main}>
         <div>
           <Toolbar
+            ref="toolbar"
             spawning={this.state.spawning}
             aerror={this.state.aerror}
             downloading={this.state.downloading}

@@ -56,6 +56,11 @@ export default React.createClass({
       ? "tistore_url-invalid"
       : "tistore_url";
   },
+  focusURL() {
+    // We can't focus disabled input so we need to run this manually
+    // after we spawned aria2.
+    this.refs.url.focus();
+  },
   isCrawlDisabled() {
     return this.commonDisabled() || this.isURLInvalid();
   },
@@ -106,6 +111,7 @@ export default React.createClass({
           <Icon name="folder-o" />
         </ToolButton>
         <input
+          ref="url"
           type="text"
           style={this.styles.url}
           className={this.getURLClassName()}
