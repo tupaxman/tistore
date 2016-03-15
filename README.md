@@ -2,7 +2,9 @@
 
 tistore is a simple GUI application for grabbing photos from Tistory blogs. It can grab entire blog, separate post or use a list of URLs and download them in parallel using blazingly fast [aria2](https://github.com/tatsuhiro-t/aria2) backend. Original filenames (including Hangul) are preserved.
 
-![](https://raw.githubusercontent.com/Kagami/tistore/assets/tistore.png)
+<p align="center">
+  <a href="https://raw.githubusercontent.com/Kagami/tistore/assets/tistore.png"><img src="https://raw.githubusercontent.com/Kagami/tistore/assets/tistore.png"></a>
+</p>
 
 ## Install
 
