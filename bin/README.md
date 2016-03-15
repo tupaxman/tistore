@@ -7,6 +7,6 @@ wget http://dl.nwjs.io/v0.13.0-rc3/nwjs-v0.13.0-rc3-linux-x64.tar.gz
 tar xvf nwjs-v0.13.0-rc3-linux-x64.tar.gz
 wget http://dl.nwjs.io/v0.13.0-rc3/nwjs-v0.13.0-rc3-win-ia32.zip
 unzip nwjs-v0.13.0-rc3-win-ia32.zip
-wget https://github.com/tatsuhiro-t/aria2/releases/download/release-1.20.0/aria2-1.20.0-win-32bit-build1.zip
-unzip aria2-1.20.0-win-32bit-build1.zip && cp aria2-1.20.0-win-32bit-build1/aria2c.exe .
+wget https://github.com/tatsuhiro-t/aria2/releases/download/release-1.21.0/aria2-1.21.0-win-32bit-build1.zip
+unzip aria2-1.21.0-win-32bit-build1.zip && cp aria2-1.21.0-win-32bit-build1/aria2c.exe . && chmod -x aria2c.exe
 ```
