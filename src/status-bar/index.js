@@ -112,14 +112,20 @@ export default React.createClass({
     const s = len > 1 ? "s" : "";
     return (
       <span>
-        {len} link{s} loaded, ready to start.
+        <span>{len} link{s} loaded.</span>
         <span style={this.styles.label}> Saving to:</span>
         {this._getOutDirNode()}
       </span>
     );
   },
   getPreAddNode() {
-    return <span>Add/crawl some links.</span>;
+    return (
+      <span>
+        <span>Add/crawl some links.</span>
+        <span style={this.styles.label}> Saving to:</span>
+        {this._getOutDirNode()}
+      </span>
+    );
   },
   getStatusNode() {
     if (this.props.aerror) {

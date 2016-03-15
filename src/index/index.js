@@ -245,6 +245,7 @@ const Index = React.createClass({
     Tistory[method](this.state.url, opts).then(links => {
       links.forEach(url => this.fileSet.add({url}));
       this.setState({crawling: false, url: ""});
+      this.runDownload();
     }, () => {
       // FIXME(Kagami): Display crawling errors.
       this.setState({crawling: false, url: ""});
