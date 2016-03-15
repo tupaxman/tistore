@@ -3,6 +3,8 @@
  * @module tistore/util
  */
 
+import fs from "fs";
+import path from "path";
 import which from "which";
 export {default as ShowHide} from "./show-hide";
 
@@ -47,4 +49,45 @@ export function getRunPath(cmd) {
   } catch(e) {
     return null;
   }
+}
+
+/**
+ * Rename source path to target, preserving existent file at target path
+ * in a race-free way. Automatically add numeric suffix to the name in
+ * that case (just like wget/aria2 clobbering, but keeping original
+ * extension).
+ *
+ * **NOTE:** Both paths must belong to the same filesytem.
+ *
+ * @returns {String} Final target path.
+ * @throws {Exception} Unrelated IO error or too many tries.
+ */
+export function safeRenameSync(path1, path2) {
+  // Race-free rename. See <https://stackoverflow.com/a/3222465>.
+  function tryRename(p1, p2) {
+    try {
+      fs.linkSync(p1, p2);
+    } catch(e) {
+      if (e.code === "EEXIST") {
+        return false;
+      } else {
+        throw e;
+      }
+    }
+    fs.unlinkSync(p1);
+    return true;
+  }
+
+  if (tryRename(path1, path2)) return path2;
+
+  const fdir = path.dirname(path2);
+  const fext = path.extname(path2);
+  const fname = path.basename(path2, fext);
+  for (let i = 1; i < 10000; i++) {
+    const fnameTry = fname + "-" + i + fext;
+    const pathTry = path.join(fdir, fnameTry);
+    if (tryRename(path1, pathTry)) return pathTry;
+  }
+
+  throw new Error("Safe rename failed: too many tries");
 }

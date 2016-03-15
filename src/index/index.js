@@ -19,6 +19,7 @@ import Toolbar from "../toolbar";
 import FileList from "../file-list";
 import StatusBar from "../status-bar";
 import FileDialog from "../file-dialog";
+import {safeRenameSync} from "../util";
 import pkg from "../../package.json";
 
 const Index = React.createClass({
@@ -243,31 +244,41 @@ const Index = React.createClass({
         if (file.status === "error") {
           file.errorMsg = info.errorMessage;
           // Remove junk.
-          try {
-            fs.unlinkSync(fpath);
-          } catch(e) {
-            /* skip */
-          }
+          // NOTE(Kagami): We remove control file first to avoid
+          // potential race:
+          //   - we:    remove(fpath)
+          //   - aria2: downloadTo(fpath), create(fpath.aria2)
+          //   - we:    remove(fpath.aria2)
           try {
             fs.unlinkSync(fpath + ".aria2");
           } catch(e) {
             /* skip */
           }
+          try {
+            fs.unlinkSync(fpath);
+          } catch(e) {
+            /* skip */
+          }
         } else {
           file.size = +info.totalLength;
-          const fdir = path.dirname(fpath);
           let fname = path.basename(fpath);
-          // Fix digit extensions (a.jpg.2 -> a-2.jpg).
-          fname = fname.replace(/\.([^.]+)\.(\d+)$/, "-$2.$1");
+          // Remove aria2's numeric suffix (this will be handled by our
+          // safe rename).
+          fname = fname.replace(/\.\d+$/, "");
           // Remove percent encoding (we need this because Tistory
-          // doesn't specify encoding of Content-Disposition header, see
+          // doesn't specify encoding of Content-Disposition, see
           // <https://github.com/tatsuhiro-t/aria2/issues/425> for
           // details).
           fname = decodeURIComponent(fname);
-          const fpath2 = path.join(fdir, fname);
+          let fpath2 = path.join(path.dirname(fpath), fname);
           try {
-            fs.renameSync(fpath, fpath2);
-            file.name = fname;
+            // NOTE(Kagami): There is still possibility of race
+            // condition because aria2 auto-file-renaming code is _not_
+            // race-free. Though probablity is low since we use slightly
+            // different auto-rename suffix (a-1.jpg instead of
+            // a.jpg.1) and duplicates at Tistory are not that often.
+            fpath2 = safeRenameSync(fpath, fpath2);
+            file.name = path.basename(fpath2);
             file.path = fpath2;
           } catch(e) {
             /* skip */
