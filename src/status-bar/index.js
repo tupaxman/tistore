@@ -21,7 +21,7 @@ export default React.createClass({
       paddingRight: 8,
     },
     spawning: {
-      color: "blue",
+      color: "orange",
     },
     error: {
       color: "red",
