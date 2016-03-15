@@ -77,7 +77,12 @@ export function safeRenameSync(path1, path2) {
     return true;
   }
 
+  // Make consistent slashes.
+  path1 = path.normalize(path1);
+  path2 = path.normalize(path2);
+  // Check for no-op.
   if (path1 === path2) return path2;
+
   if (tryRename(path1, path2)) return path2;
 
   const fdir = path.dirname(path2);
