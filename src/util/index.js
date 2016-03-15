@@ -6,7 +6,6 @@
 import fs from "fs";
 import path from "path";
 import which from "which";
-export {default as ShowHide} from "./show-hide";
 
 // Grab some actual UAs at:
 // - <https://github.com/gorhill/uMatrix/wiki/Latest-user-agent-strings>
