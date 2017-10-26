@@ -18,30 +18,12 @@ You will need aria2 and common desktop deps such as X11, gtk, gconf installed. D
 
 Everything is included to the build, just download [latest release](https://github.com/Kagami/tistore/releases), unpack and run `tistore.bat`.
 
-### Mac
-
-*TODO*
-
-## Manual build
-
-*TODO*
-
 ## License
 
-tistore own code, documentation and icon are licensed under CC0, but the resulting build also includes the following libraries and assets:
+tistore's own code is licensed under [CC0](licenses/LICENSE.TISTORE) but releases also include:
 
-* Libraries in `dependencies` section of [package.json](package.json) (BSD-like)
-* [NW.js binaries](https://github.com/nwjs/nw.js), see also `credits.html` in release archives
-* [OpenSans font](https://www.google.com/fonts/specimen/Open+Sans), see `LICENSE.OPENSANS`
-* [Font Awesome icons](https://github.com/FortAwesome/Font-Awesome), see `LICENSE.FONTAWESOME`
-* [aria2 binaries](https://github.com/tatsuhiro-t/aria2) (only in Windows build, see `LICENSE.ARIA2`)
-
----
-
-tistore - Tistory photo grabber
-
-Written in 2016 by Kagami Hiiragi <kagami@genshiken.org>
-
-To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
-
-You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+* Libraries from dependencies section of [package.json](package.json)
+* [NW.js binaries](https://github.com/nwjs/nw.js)
+* [OpenSans font](licenses/LICENSE.OPENSANS)
+* [Font Awesome icons](licenses/LICENSE.FONTAWESOME)
+* [aria2 binaries](licenses/LICENSE.ARIA2) (only in Windows build)
