@@ -12,7 +12,7 @@ function insrc(...parts) {
 }
 
 function q(loader, query) {
-  return loader + "?" + JSON.stringify(query);
+  return loader + "-loader?" + JSON.stringify(query);
 }
 
 const DIST_DIR = path.join("dist", "app");
@@ -34,13 +34,12 @@ const PACKAGE_LOADERS = [
   q("file", NAMEQ),
   q("ejs-html", {opts: MANIFEST_OPTS}),
 ];
-const ExtractLoader = ExtractTextPlugin.extract("css");
+const ExtractLoader = ExtractTextPlugin.extract("css-loader");
 const COMMON_PLUGINS = [
   new webpack.DefinePlugin({WIN_BUILD}),
   new ExtractTextPlugin("index.css"),
 ];
 const PLUGINS = DEBUG ? COMMON_PLUGINS : COMMON_PLUGINS.concat([
-  new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.optimize.UglifyJsPlugin({
     output: {comments: false},
     compress: {warnings: false},
@@ -55,19 +54,22 @@ export default {
     path: path.join(__dirname, DIST_DIR),
     filename: "index.js",
   },
+  // XXX(Kagami): Not actually needed and has ES6 deps which is not
+  // supported by current minify configuration.
+  externals: ["hawk"],
   module: {
     // See <https://github.com/webpack/webpack/issues/138>.
     noParse: inmodules(".*json-schema", "lib", "validate\\.js"),
     loaders: [
-      {test: /\.json$/, loader: "json"},
-      {test: insrc(".+\\.js"), loader: "babel"},
-      {test: insrc(".+\\.png"), loader: "file", query: FULLNAMEQ},
-      {test: insrc("..", "bin", ".+\\.exe"), loader: "file", query: FULLNAMEQ},
+      {test: /\.json$/, loader: "json-loader"},
+      {test: insrc(".+\\.js"), loader: "babel-loader"},
+      {test: insrc(".+\\.png"), loader: "file-loader", query: FULLNAMEQ},
+      {test: insrc("..", "bin", ".+\\.exe"), loader: "file-loader", query: FULLNAMEQ},
       {test: insrc("index", "index\\.html\\.ejs"), loaders: INDEX_LOADERS},
       {test: insrc("index", "package\\.json\\.ejs"), loaders: PACKAGE_LOADERS},
       // Fonts, font-awesome.
-      {test: /\.woff2(\?v=[\d.]+)?$/, loader: "file", query: FULLNAMEQ},
-      {test: /\.(ttf|eot|svg|woff)(\?v=[\d.]+)?$/, loader: "skip"},
+      {test: /\.woff2(\?v=[\d.]+)?$/, loader: "file-loader", query: FULLNAMEQ},
+      {test: /\.(ttf|eot|svg|woff)(\?v=[\d.]+)?$/, loader: "skip-loader"},
       {test: inmodules("font-awesome", ".+\\.css"), loader: ExtractLoader},
     ],
   },
