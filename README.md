@@ -8,15 +8,13 @@ tistore is a simple GUI application for grabbing photos from Tistory blogs. It c
 
 ## Install
 
-For the first time you will need to download `.7z` archive corresponding to your platform. If you want to update to newer version of tistore, you may however get only appropriate `.nw` file and replace `app.nw` in unpacked directory of full build. (`.nw` files contain the actual application, but you need NW.js environment in order to run them.)
+### Windows
+
+Download [latest release](https://github.com/Kagami/tistore/releases), unpack and run `tistore.exe`.
 
 ### Linux
 
-You will need aria2 and common desktop deps such as X11, gtk, gconf installed. Download [latest release](https://github.com/Kagami/tistore/releases), unpack it and run `./tistore`.
-
-### Windows
-
-Everything is included to the build, just download [latest release](https://github.com/Kagami/tistore/releases), unpack and run `tistore.bat`.
+You will need aria2 installed. Download [latest release](https://github.com/Kagami/tistore/releases), unpack and run `./tistore`.
 
 ## License
 
