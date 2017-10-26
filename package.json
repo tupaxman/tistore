@@ -38,27 +38,28 @@
     "url": "https://github.com/Kagami/tistore/issues"
   },
   "dependencies": {
-    "react": "^0.14.7",
-    "react-dom": "^0.14.7",
-    "react-fa": "^4.0.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-fa": "^5.0.0",
     "request": "^2.69.0",
-    "throat": "^2.0.2",
+    "throat": "^4.1.0",
     "which": "^1.2.4"
   },
   "devDependencies": {
     "babel-core": "^6.7.0",
-    "babel-eslint": "^5.0.0",
-    "babel-loader": "^6.2.4",
+    "babel-eslint": "^8.0.1",
+    "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.6.0",
     "babel-preset-react": "^6.5.0",
-    "css-loader": "^0.23.1",
-    "ejs-html-loader": "^1.1.0",
-    "eslint": "2.2.x",
-    "eslint-plugin-react": "^4.2.1",
-    "extract-text-webpack-plugin": "^1.0.1",
-    "file-loader": "^0.8.5",
+    "css-loader": "^0.28.7",
+    "ejs": "^2.5.7",
+    "ejs-html-loader": "^3.1.0",
+    "eslint": "4.9.x",
+    "eslint-plugin-react": "^7.4.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^1.1.5",
     "json-loader": "^0.5.4",
-    "nw": "^0.13.0-rc3sdk",
-    "webpack": "^1.12.14"
+    "nw": "^0.26.0",
+    "webpack": "^3.8.1"
   }
 }
