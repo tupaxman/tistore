@@ -34,7 +34,6 @@ const PACKAGE_LOADERS = [
   q("file", NAMEQ),
   q("ejs-html", {opts: MANIFEST_OPTS}),
 ];
-const SkipLoader = require.resolve("./skip-loader");
 const ExtractLoader = ExtractTextPlugin.extract("css");
 const COMMON_PLUGINS = [
   new webpack.DefinePlugin({WIN_BUILD}),
@@ -68,7 +67,7 @@ export default {
       {test: insrc("index", "package\\.json\\.ejs"), loaders: PACKAGE_LOADERS},
       // Fonts, font-awesome.
       {test: /\.woff2(\?v=[\d.]+)?$/, loader: "file", query: FULLNAMEQ},
-      {test: /\.(ttf|eot|svg|woff)(\?v=[\d.]+)?$/, loader: SkipLoader},
+      {test: /\.(ttf|eot|svg|woff)(\?v=[\d.]+)?$/, loader: "skip"},
       {test: inmodules("font-awesome", ".+\\.css"), loader: ExtractLoader},
     ],
   },
