@@ -77,13 +77,13 @@ const Index = createReactClass({
   },
   // Make sure this isn't skipped because of `shouldComponentUpdate`.
   componentDidUpdate() {
-    const isReady = !(
-      this.state.spawning ||
-      this.state.aerror ||
-      this.state.disconnected ||
-      this.state.downloading
-    );
-    const hasLinks = !!this.state.files.length;
+    // const isReady = !(
+    //   this.state.spawning ||
+    //   this.state.aerror ||
+    //   this.state.disconnected ||
+    //   this.state.downloading
+    // );
+    // const hasLinks = !!this.state.files.length;
     // this.addLinksItem.enabled = isReady;
     // this.exportLinksItem.enabled = isReady && hasLinks;
     // this.clearLinksItem.enabled = isReady && hasLinks;

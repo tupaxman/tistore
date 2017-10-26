@@ -17,7 +17,7 @@ export default {
   _LINK_RE: /http:\/\/cfile\d+\.uf\.tistory\.com\/(image|original)\/\w+/g,
   // IDN are not supported, but there shouldn't be such subdomains.
   _PAGE_RE: /^http:\/\/[-.\w]+\.tistory\.com\/\d+([?#]|$)/i,
-  _BLOG_RE: /^http:\/\/[-.\w]+\.tistory\.com([\/](?!\d)|[?#]|$)/i,
+  _BLOG_RE: /^http:\/\/[-.\w]+\.tistory\.com(\/(?!\d)|[?#]|$)/i,
   _getLastPageNum(data) {
     let re = /<a\s+href="\/(\d+)"\s*>/ig;
     let nums = [];
@@ -96,9 +96,9 @@ export default {
             sendUpdate();
           });
         })))
-        // Links are passed via live updates; this just makes interface
-        // similar to crawlPage.
-        .then(() => []);
+          // Links are passed via live updates; this just makes interface
+          // similar to crawlPage.
+          .then(() => []);
       });
   },
 };

@@ -26,9 +26,9 @@ export default createReactClass({
     );
     return (
       <table style={this.styles.main}>
-      <tbody>
-        {fileNodes}
-      </tbody>
+        <tbody>
+          {fileNodes}
+        </tbody>
       </table>
     );
   },

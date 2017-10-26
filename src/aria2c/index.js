@@ -33,10 +33,9 @@ export default {
     let proc;
     let exited = false;
     let stdout = "";
-    let stderr = "";
     let ariap = new Promise((resolve, reject) => {
       try {
-        proc = spawn(runpath, args, {stdio: ["ignore", "pipe", "pipe"]});
+        proc = spawn(runpath, args, {stdio: ["ignore", "pipe", "ignore"]});
       } catch(err) {
         exited = true;
         throw new Error(`Failed to run aria2c: ${err.message}`);
@@ -49,12 +48,8 @@ export default {
         // later.
         if (stdout.includes("listening on TCP port")) {
           proc.stdout.destroy();
-          proc.stderr.destroy();
           resolve(new Aria2c({proc, port, secret}));
         }
-      });
-      proc.stderr.on("data", data => {
-        stderr += data;
       });
       proc.on("error", err => {
         reject(new Error(`Failed to run aria2c: ${err.message}`));
