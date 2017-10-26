@@ -62,15 +62,17 @@ const Index = createReactClass({
   },
   componentDidMount() {
     let mainWindow = window.nw.Window.get();
-    mainWindow.on("close", () => {
-      if (confirm("Are you sure you want to exit?")) {
-        // NOTE(Kagami): aria2 process will be killed by onexit handler;
-        // it should be rather safe since we send SIGTERM and aria2
-        // should do all needed cleanup before exit.
-        mainWindow.close(true);
-      }
-    });
-    this.setMenu();
+    if (!process.env.TISTORE_DEBUG) {
+      mainWindow.on("close", () => {
+        if (confirm("Are you sure you want to exit?")) {
+          // NOTE(Kagami): aria2 process will be killed by onexit handler;
+          // it should be rather safe since we send SIGTERM and aria2
+          // should do all needed cleanup before exit.
+          mainWindow.close(true);
+        }
+      });
+    }
+    // this.setMenu();
     this.spawnAria();
   },
   // Make sure this isn't skipped because of `shouldComponentUpdate`.
@@ -82,9 +84,9 @@ const Index = createReactClass({
       this.state.downloading
     );
     const hasLinks = !!this.state.files.length;
-    this.addLinksItem.enabled = isReady;
-    this.exportLinksItem.enabled = isReady && hasLinks;
-    this.clearLinksItem.enabled = isReady && hasLinks;
+    // this.addLinksItem.enabled = isReady;
+    // this.exportLinksItem.enabled = isReady && hasLinks;
+    // this.clearLinksItem.enabled = isReady && hasLinks;
   },
   setMenu() {
     this.addLinksItem = new window.nw.MenuItem({

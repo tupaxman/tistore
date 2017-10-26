@@ -48,8 +48,8 @@ export default {
         // this message), it's neither possible to disable via RPC
         // later.
         if (stdout.includes("listening on TCP port")) {
-          proc.stdout.end();
-          proc.stderr.end();
+          proc.stdout.destroy();
+          proc.stderr.destroy();
           resolve(new Aria2c({proc, port, secret}));
         }
       });

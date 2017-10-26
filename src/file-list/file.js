@@ -46,7 +46,7 @@ export default createReactClass({
     if (this.props.status === "error") {
       return this.props.errorMsg;
     } else if (this.props.path) {
-      return <a href onClick={this.handleNameClick}>{this.props.name}</a>;
+      return <a href="" onClick={this.handleNameClick}>{this.props.name}</a>;
     } else {
       return "-";
     }

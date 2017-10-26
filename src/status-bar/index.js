@@ -48,7 +48,7 @@ export default createReactClass({
   },
   _getOutDirNode() {
     return (
-      <a href onClick={this.handleOutDirClick}>
+      <a href="" onClick={this.handleOutDirClick}>
         <Icon name="folder-o" />
         <span> {this.props.outDir}</span>
       </a>
