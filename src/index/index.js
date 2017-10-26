@@ -74,11 +74,6 @@ const Index = React.createClass({
   },
   // Make sure this isn't skipped because of `shouldComponentUpdate`.
   componentDidUpdate() {
-    // NOTE(Kagami): It's not possible to disable submenu on Linux (see
-    // <https://github.com/nwjs/nw.js/issues/2312>), so we block all its
-    // subelements instead.
-    // NOTE(Kagami): There were some issues with dynamic updates on
-    // Windows, see: <https://github.com/nwjs/nw.js/issues/2519>.
     const isReady = !(
       this.state.spawning ||
       this.state.aerror ||
