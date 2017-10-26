@@ -56,7 +56,7 @@ export default {
   },
   // XXX(Kagami): Not actually needed and has ES6 deps which is not
   // supported by current minify configuration.
-  externals: ["hawk"],
+  externals: [{hawk: "undefined"}],
   module: {
     // See <https://github.com/webpack/webpack/issues/138>.
     noParse: inmodules(".*json-schema", "lib", "validate\\.js"),

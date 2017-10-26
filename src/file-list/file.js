@@ -4,10 +4,11 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import Icon from "react-fa";
 import {showSize} from "../util";
 
-export default React.createClass({
+export default createReactClass({
   shouldComponentUpdate(nextProps/*, nextState*/) {
     return (
       this.props.errorMsg !== nextProps.errorMsg ||

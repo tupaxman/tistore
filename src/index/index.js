@@ -7,6 +7,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import React from "react";
+import createReactClass from "create-react-class";
 import ReactDOM from "react-dom";
 import "./package.json.ejs";
 import "./index.html.ejs";
@@ -23,7 +24,7 @@ import Tistory from "../tistory";
 import {safeRenameSync} from "../util";
 import pkg from "../../package.json";
 
-const Index = React.createClass({
+const Index = createReactClass({
   getInitialState() {
     // Very simple OrderedDict equiavalent.
     this.fileSet = (function() {

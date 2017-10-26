@@ -4,8 +4,9 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 
-export default React.createClass({
+export default createReactClass({
   componentDidMount() {
     if (this.props.saveAs) {
       this.refs.file.setAttribute("nwsaveas", this.props.saveAs);

@@ -4,10 +4,11 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import Icon from "react-fa";
 import {showSpeed} from "../util";
 
-export default React.createClass({
+export default createReactClass({
   styles: {
     main: {
       margin: "3px 5px",

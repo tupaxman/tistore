@@ -4,11 +4,12 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import Icon from "react-fa";
 import {ToolButton} from "../theme";
 import Tistory from "../tistory";
 
-export default React.createClass({
+export default createReactClass({
   styles: {
     main: {
       display: "flex",

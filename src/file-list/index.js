@@ -4,9 +4,10 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 import File from "./file";
 
-export default React.createClass({
+export default createReactClass({
   styles: {
     main: {
       width: "100%",

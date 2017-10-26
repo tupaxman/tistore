@@ -4,8 +4,9 @@
  */
 
 import React from "react";
+import createReactClass from "create-react-class";
 
-export const ToolButton = React.createClass({
+export const ToolButton = createReactClass({
   styles: {
     main: {
       width: 48,
