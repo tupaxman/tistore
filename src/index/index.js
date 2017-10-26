@@ -72,34 +72,38 @@ const Index = createReactClass({
         }
       });
     }
-    // this.setMenu();
+    this.setMenu();
     this.spawnAria();
   },
   // Make sure this isn't skipped because of `shouldComponentUpdate`.
   componentDidUpdate() {
-    // const isReady = !(
-    //   this.state.spawning ||
-    //   this.state.aerror ||
-    //   this.state.disconnected ||
-    //   this.state.downloading
-    // );
-    // const hasLinks = !!this.state.files.length;
-    // this.addLinksItem.enabled = isReady;
-    // this.exportLinksItem.enabled = isReady && hasLinks;
-    // this.clearLinksItem.enabled = isReady && hasLinks;
+    const isReady = !(
+      this.state.spawning ||
+      this.state.aerror ||
+      this.state.disconnected ||
+      this.state.downloading
+    );
+    const hasLinks = !!this.state.files.length;
+    this.addLinksItem.enabled = isReady;
+    this.exportLinksItem.enabled = isReady && hasLinks;
+    this.clearLinksItem.enabled = isReady && hasLinks;
   },
   setMenu() {
     this.addLinksItem = new window.nw.MenuItem({
       label: "Add from file",
-      click: this.handleLinksAdd,
+      // XXX(Kagami): Without wrapper function Chrome freezes and prints
+      // tons of "Unexpected v8 value type encountered" errors. For some
+      // reason component's functions get serialized to "native code".
+      // This is regression somewhere between nw.js 0.13 and 0.26.
+      click: () => this.handleLinksAdd(),
     });
     this.exportLinksItem = new window.nw.MenuItem({
       label: "Export to file",
-      click: this.handleLinksExport,
+      click: () => this.handleLinksExport(),
     });
     this.clearLinksItem = new window.nw.MenuItem({
       label: "Clear list",
-      click: this.handleLinksClear,
+      click: () => this.handleLinksClear(),
     });
     let linksMenu = new window.nw.Menu();
     linksMenu.append(this.addLinksItem);
@@ -111,11 +115,11 @@ const Index = createReactClass({
     let helpMenu = new window.nw.Menu();
     helpMenu.append(new window.nw.MenuItem({
       label: "About",
-      click: this.handleAboutClick,
+      click: () => this.handleAboutClick(),
     }));
     helpMenu.append(new window.nw.MenuItem({
       label: "Official site",
-      click: this.handleSiteClick,
+      click: () => this.handleSiteClick(),
     }));
     let helpItem = new window.nw.MenuItem({label: "Help"});
     helpItem.submenu = helpMenu;
