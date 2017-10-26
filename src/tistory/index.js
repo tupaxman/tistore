@@ -19,7 +19,7 @@ export default {
   _PAGE_RE: /^http:\/\/[-.\w]+\.tistory\.com\/\d+([?#]|$)/i,
   _BLOG_RE: /^http:\/\/[-.\w]+\.tistory\.com(\/(?!\d)|[?#]|$)/i,
   _getLastPageNum(data) {
-    let re = /<a\s+href="\/(\d+)"\s*>/ig;
+    let re = /<a\s+href="\/(\d+)"[\s>]/ig;
     let nums = [];
     let match;
     while ((match = re.exec(data)) != null) {
