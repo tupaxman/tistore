@@ -60,9 +60,8 @@ export default {
     noParse: inmodules(".*json-schema", "lib", "validate\\.js"),
     loaders: [
       {test: /\.json$/, loader: "json-loader"},
+      {test: /\.(png|exe)$/, loader: "file-loader", query: FULLNAMEQ},
       {test: insrc(".+\\.js"), loader: "babel-loader"},
-      {test: insrc(".+\\.png"), loader: "file-loader", query: FULLNAMEQ},
-      {test: insrc(".+\\.exe"), loader: "file-loader", query: FULLNAMEQ},
       {test: insrc("index", "index\\.html\\.ejs"), loaders: INDEX_LOADERS},
       {test: insrc("index", "package\\.json\\.ejs"), loaders: PACKAGE_LOADERS},
       // Fonts, font-awesome.
