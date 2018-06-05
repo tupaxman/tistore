@@ -21,7 +21,6 @@ import FileList from "../file-list";
 import StatusBar from "../status-bar";
 import FileDialog from "../file-dialog";
 import Tistory from "../tistory";
-import {safeRenameSync} from "../util";
 import pkg from "../../package.json";
 
 const Index = createReactClass({
@@ -303,28 +302,8 @@ const Index = createReactClass({
           }
         } else {
           file.size = +info.totalLength;
-          let fname = path.basename(fpath);
-          // Remove aria2's numeric suffix (this will be handled by our
-          // safe rename).
-          fname = fname.replace(/\.\d+$/, "");
-          // Remove percent encoding (we need this because Tistory
-          // doesn't specify encoding of Content-Disposition, see
-          // <https://github.com/tatsuhiro-t/aria2/issues/425> for
-          // details).
-          fname = decodeURIComponent(fname);
-          let fpath2 = path.join(path.dirname(fpath), fname);
-          try {
-            // NOTE(Kagami): There is still possibility of race
-            // condition because aria2 auto-file-renaming code is _not_
-            // race-free. Though probablity is low since we use slightly
-            // different auto-rename suffix (a-1.jpg instead of
-            // a.jpg.1) and duplicates at Tistory are not that often.
-            fpath2 = safeRenameSync(fpath, fpath2);
-            file.name = path.basename(fpath2);
-            file.path = fpath2;
-          } catch(e) {
-            /* skip */
-          }
+          file.path = fpath;
+          file.name = path.basename(fpath);
         }
         flushState();
       });
