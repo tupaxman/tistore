@@ -93,8 +93,6 @@ export default createReactClass({
     this.refs.threads.blur();
   },
   handleThreadsChange(e) {
-    // NOTE(Kagami): Non-focused input doesn't trigger "change" events.
-    // Hopefully "click" works good enough.
     this.props.onThreadsChange(+e.target.value);
   },
   render() {
@@ -150,7 +148,7 @@ export default createReactClass({
           title="Number of threads"
           disabled={this.isThreadsDisabled()}
           onFocus={this.handleThreadsFocus}
-          onClick={this.handleThreadsChange}
+          onChange={this.handleThreadsChange}
           value={this.props.threads}
           min="1"
           max="99"
