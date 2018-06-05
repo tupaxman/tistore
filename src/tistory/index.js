@@ -14,7 +14,7 @@ import {CHROME_UA} from "../util";
 // one. So shut up and parse HTML with regexps ;)
 
 export default {
-  _LINK_RE: /http:\/\/cfile\d+\.uf\.tistory\.com\/(image|original)\/\w+/g,
+  _LINK_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
   // IDN are not supported, but there shouldn't be such subdomains.
   _PAGE_RE: /^http:\/\/[-.\w]+\.tistory\.com\/\d+([?#]|$)/i,
   _BLOG_RE: /^http:\/\/[-.\w]+\.tistory\.com(\/(?!\d)|[?#]|$)/i,
@@ -33,8 +33,7 @@ export default {
   _getLinks(data) {
     // Don't mind returning duplicates since they will be filtered out
     // by `tistore/index.fileSet`.
-    return (data.match(this._LINK_RE) || [])
-      .map(link => link.replace("/image/", "/original/"));
+    return (data.match(this._LINK_RE) || []).map(link => link + "?original");
   },
   _fetch(url) {
     return new Promise((resolve, reject) => {

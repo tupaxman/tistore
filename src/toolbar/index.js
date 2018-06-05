@@ -151,7 +151,7 @@ export default createReactClass({
           onChange={this.handleThreadsChange}
           value={this.props.threads}
           min="1"
-          max="99"
+          max="16"
         />
       </div>
     );
