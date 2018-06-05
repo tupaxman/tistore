@@ -85,6 +85,7 @@ export default {
       "--split", "1",
       // Just in case.
       "--user-agent", CHROME_UA,
+      "--content-disposition-default-utf8",
     ], secret);
   },
 };
