@@ -6,11 +6,10 @@
 import which from "which";
 
 // Grab some actual UAs at:
-// - <https://github.com/gorhill/uMatrix/wiki/Latest-user-agent-strings>
 // - <https://techblog.willshouse.com/2012/01/03/most-common-user-agents/>
-export const CHROME_UA = "Mozilla/5.0 (Windows NT 6.1; WOW64) " +
+export const CHROME_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
                          "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                         "Chrome/48.0.2564.116 Safari/537.36";
+                         "Chrome/66.0.3359.181 Safari/537.36";
 
 // Taken from wybm.
 export function showSize(size) {

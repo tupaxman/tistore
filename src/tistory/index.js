@@ -11,11 +11,10 @@ import {CHROME_UA} from "../util";
 // NOTE(Kagami): Tistory actually has JSON API (see
 // <http://www.tistory.com/guide/api/index>), but it requires
 // authorization and it would be too risky to hardcode some predefined
-// one. So shut up and parse HTML with regexps ;)
+// one. Also invite is required to register at Tistory.
 
 export default {
   _LINK_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
-  // IDN are not supported, but there shouldn't be such subdomains.
   _PAGE_RE: /^https?:\/\/[^/]+\/\d+([?#]|$)/i,
   _BLOG_RE: /^https?:\/\/[^/]+(\/(?!\d)|[?#]|$)/i,
   _getLastPageNum(data) {
