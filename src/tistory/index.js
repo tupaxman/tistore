@@ -16,8 +16,8 @@ import {CHROME_UA} from "../util";
 export default {
   _LINK_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
   // IDN are not supported, but there shouldn't be such subdomains.
-  _PAGE_RE: /^http:\/\/[-.\w]+\.tistory\.com\/\d+([?#]|$)/i,
-  _BLOG_RE: /^http:\/\/[-.\w]+\.tistory\.com(\/(?!\d)|[?#]|$)/i,
+  _PAGE_RE: /^https?:\/\/[^/]+\/\d+([?#]|$)/i,
+  _BLOG_RE: /^https?:\/\/[^/]+(\/(?!\d)|[?#]|$)/i,
   _getLastPageNum(data) {
     let re = /<a\s+href="\/(\d+)"[\s>]/ig;
     let nums = [];
