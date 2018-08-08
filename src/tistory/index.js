@@ -17,11 +17,23 @@ export default {
   _BLOG_RE: /^(https?:\/\/[^/]+)/,
   _ENTRY_RE: /^https?:\/\/[^/]+\/(\d+([?#]|$)|entry\/)/,
   _LINK_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
-  _getLastEntryNum(url, data) {
-    let re = /<a\s+href="\/(\d+)"[\s>]/ig;
-    let nums = [];
-    let match;
+  _getLastEntryNum(data) {
+    // Some blogs only have that type of links, e.g.
+    // http://fortheone.tistory.com/
+    const re = /<a\s+href="\/(\d+)"[\s>]/ig;
+    // Some blogs only have that type of info, e.g.
+    // http://karaworld.tistory.com/
+    const re2 = /"entryId":\s*"(\d+)"/g;
+    // Some have both, e.g. http://jungeunwoo.tistory.com/
+    // This might break on markup update, use some better method in that
+    // case.
+
+    const nums = [];
+    let match = null;
     while ((match = re.exec(data)) != null) {
+      nums.push(+match[1]);
+    }
+    while ((match = re2.exec(data)) != null) {
       nums.push(+match[1]);
     }
     assert.notEqual(nums.length, 0, "Failed to get number of entries");
@@ -70,7 +82,7 @@ export default {
     url = this.prepareURL(url);
     url = this._BLOG_RE.exec(url)[1];  // Get bare URL
     return this._fetch(url)
-      .then(this._getLastEntryNum.bind(this, url))
+      .then(this._getLastEntryNum.bind(this))
       .then(last => {
         let currentEntry = 0;
         function sendUpdate(links) {
