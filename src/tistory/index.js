@@ -85,17 +85,21 @@ export default {
       .then(this._getLastEntryNum.bind(this))
       .then(last => {
         let currentEntry = 0;
-        function sendUpdate(links) {
-          links = links || [];
-          opts.onUpdate({links, currentEntry, totalEntries: last});
+        function sendUpdate(eid = 0, links = []) {
+          opts.onUpdate({eid, links, currentEntry, totalEntries: last});
         }
 
         sendUpdate();
-        const eurls = Array(last).fill().map((_, i) => `${url}/${i + 1}`);
-        return Promise.all(eurls.map(throat(opts.threads, eurl => {
-          return this.crawlEntry(eurl).then(links => {
+        const entries = Array(last).fill().map((_, i) => (
+          {
+            id: i + 1,
+            url: `${url}/${i + 1}`,
+          }
+        ));
+        return Promise.all(entries.map(throat(opts.threads, e => {
+          return this.crawlEntry(e.url).then(links => {
             currentEntry++;
-            sendUpdate(links);
+            sendUpdate(e.id, links);
           }, () => {
             currentEntry++;
             sendUpdate();

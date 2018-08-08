@@ -223,8 +223,9 @@ const Index = createReactClass({
     // effort. Just suggest user to restart program...
     this.setState({disconnected: true});
   },
-  handleCrawlUpdate({links, currentEntry, totalEntries}) {
-    links.forEach(url => this.fileSet.add({url}));
+  handleCrawlUpdate({eid, links, currentEntry, totalEntries}) {
+    const dir = path.join(this.state.outDir, eid.toString());
+    links.forEach(url => this.fileSet.add({url, dir}));
     this.setState({currentEntry, totalEntries});
   },
   handleCrawlClick() {
@@ -323,7 +324,7 @@ const Index = createReactClass({
       // TODO(Kagami): Handle addUri errors.
       // FIXME(Kagami): Race condition if click stop before all GIDs
       // were received.
-      this.aria2c.add(file.url).then(gid => {
+      this.aria2c.add(file.url, file.dir).then(gid => {
         file.gid = gid;
         // Happen each time user clicks start/pause button.
         this.aria2c.on(`start.${gid}`, () => {

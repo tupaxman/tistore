@@ -90,8 +90,9 @@ export default class extends EventEmitter {
     opt[name] = value.toString();
     return this.call("changeGlobalOption", [opt]);
   }
-  add(url) {
-    return this.call("addUri", [[url]]);
+  add(url, dir = "") {
+    const opts = dir ? {dir} : {};
+    return this.call("addUri", [[url], opts]);
   }
   forceRemove(gid) {
     return this.call("forceRemove", [gid]);
