@@ -250,11 +250,16 @@ class Index extends React.PureComponent {
     if (this.state.downloading) return;
 
     let progress = 0;
+    let delayedFlushTID = 0;
     const bumpProgress = () => {
       this.setState({progress: ++progress});
     };
-    const flushFiles = () => {
-      this.setState({files: this.fileSet.flush()});
+    const delayedFlushFiles = () => {
+      if (delayedFlushTID) return;
+      delayedFlushTID = setTimeout(() => {
+        this.setState({files: this.fileSet.flush()});
+        delayedFlushTID = 0;
+      }, 500);
     };
     const updateStats = () => {
       this.aria2c.call("getGlobalStat").then(stats => {
@@ -300,7 +305,7 @@ class Index extends React.PureComponent {
           file.path = fpath;
           file.name = path.basename(fpath);
         }
-        flushFiles();
+        delayedFlushFiles();
       });
     };
     const removeListeners = (file) => {
@@ -322,11 +327,11 @@ class Index extends React.PureComponent {
         // Happen each time user clicks start/pause button.
         this.aria2c.on(`start.${gid}`, () => {
           file.status = "start";
-          flushFiles();
+          delayedFlushFiles();
         });
         this.aria2c.on(`pause.${gid}`, () => {
           file.status = "pause";
-          flushFiles();
+          delayedFlushFiles();
         });
         // These events should happen only once.
         this.aria2c.once(`complete.${gid}`, () => {
