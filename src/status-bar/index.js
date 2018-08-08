@@ -7,7 +7,7 @@ import React from "react";
 import Icon from "react-fa";
 import {showSpeed} from "../util";
 
-export default class StatusBar extends React.Component {
+export default class StatusBar extends React.PureComponent {
   styles = {
     main: {
       margin: "3px 5px",

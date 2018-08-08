@@ -22,25 +22,27 @@ import FileDialog from "../file-dialog";
 import Tistory from "../tistory";
 import pkg from "../../package.json";
 
-class Index extends React.Component {
+class Index extends React.PureComponent {
   constructor(props) {
     super(props);
-    // Very simple OrderedDict equiavalent.
     this.fileSet = (function() {
       let list = [];
       let hash = Object.create(null);
       return {
-        /* View as list. */
-        list: list,
         add(file) {
           if (!(file.url in hash)) {
             hash[file.url] = null;
             list.push(file);
           }
         },
+        flush() {
+          list = list.slice();
+          return list;
+        },
         clear() {
-          list.length = 0;
+          list = [];
           hash = Object.create(null);
+          return list;
         },
       };
     })();
@@ -49,7 +51,7 @@ class Index extends React.Component {
       url: "",
       threads: 16,
       spawning: true,
-      files: this.fileSet.list,
+      files: [],
     };
   }
   componentWillMount() {
@@ -73,7 +75,6 @@ class Index extends React.Component {
     this.setMenu();
     this.spawnAria();
   }
-  // Make sure this isn't skipped because of `shouldComponentUpdate`.
   componentDidUpdate() {
     const isReady = !(
       this.state.spawning ||
@@ -160,8 +161,7 @@ class Index extends React.Component {
   }
   clearCompleted() {
     if (this.state.completed) {
-      this.fileSet.clear();
-      this.setState({completed: false});
+      this.handleLinksClear();
     }
   }
   handleLinksAdd = () => {
@@ -179,7 +179,7 @@ class Index extends React.Component {
         this.fileSet.add({url: line});
       }
     });
-    this.setState({files: this.fileSet.list});
+    this.setState({files: this.fileSet.flush()});
   }
   handleLinksExport = () => {
     this.refs.saveFile.select().then(file => {
@@ -189,8 +189,7 @@ class Index extends React.Component {
     });
   }
   handleLinksClear = () => {
-    this.fileSet.clear();
-    this.setState({completed: false});
+    this.setState({completed: false, files: this.fileSet.clear()});
   }
   setDir(outDir) {
     this.aria2c.setOption("dir", outDir);
@@ -221,7 +220,7 @@ class Index extends React.Component {
   handleCrawlUpdate = ({eid, links, currentEntry, totalEntries}) => {
     const dir = path.join(this.state.outDir, eid.toString());
     links.forEach(url => this.fileSet.add({url, dir}));
-    this.setState({currentEntry, totalEntries});
+    this.setState({currentEntry, totalEntries, files: this.fileSet.flush()});
   }
   handleCrawlClick = () => {
     this.clearCompleted();
@@ -238,7 +237,7 @@ class Index extends React.Component {
     // TODO(Kagami): Allow to pause/stop crawling.
     Tistory[method](this.state.url, opts).then(links => {
       links.forEach(url => this.fileSet.add({url}));
-      this.setState({crawling: false, url: ""});
+      this.setState({crawling: false, url: "", files: this.fileSet.flush()});
       this.runDownload();
     }, err => {
       // FIXME(Kagami): Display crawling errors.
@@ -251,7 +250,12 @@ class Index extends React.Component {
     if (this.state.downloading) return;
 
     let progress = 0;
-    const files = this.state.files;
+    const bumpProgress = () => {
+      this.setState({progress: ++progress});
+    };
+    const flushFiles = () => {
+      this.setState({files: this.fileSet.flush()});
+    };
     const updateStats = () => {
       this.aria2c.call("getGlobalStat").then(stats => {
         const speed = +stats.downloadSpeed;
@@ -269,9 +273,6 @@ class Index extends React.Component {
           setTimeout(updateStats, 1000);
         }
       });
-    };
-    const flushState = () => {
-      this.setState({files});
     };
     const manageFile = (file) => {
       this.aria2c.getInfo(file.gid).then(info => {
@@ -299,7 +300,7 @@ class Index extends React.Component {
           file.path = fpath;
           file.name = path.basename(fpath);
         }
-        flushState();
+        flushFiles();
       });
     };
     const removeListeners = (file) => {
@@ -309,13 +310,10 @@ class Index extends React.Component {
       this.aria2c.removeAllListeners(`complete.${file.gid}`);
       this.aria2c.removeAllListeners(`error.${file.gid}`);
     };
-    const bumpProgress = () => {
-      this.setState({progress: ++progress});
-    };
 
     // Start!
     this.setState({downloading: true, speed: 0, progress});
-    files.forEach(file => {
+    this.state.files.forEach(file => {
       // TODO(Kagami): Handle addUri errors.
       // FIXME(Kagami): Race condition if click stop before all GIDs
       // were received.
@@ -324,11 +322,11 @@ class Index extends React.Component {
         // Happen each time user clicks start/pause button.
         this.aria2c.on(`start.${gid}`, () => {
           file.status = "start";
-          flushState();
+          flushFiles();
         });
         this.aria2c.on(`pause.${gid}`, () => {
           file.status = "pause";
-          flushState();
+          flushFiles();
         });
         // These events should happen only once.
         this.aria2c.once(`complete.${gid}`, () => {
@@ -374,10 +372,12 @@ class Index extends React.Component {
   handleStopClick = () => {
     if (confirm("Are you sure you want to abort?")) {
       if (this.state.downloading) {
-        const files = this.state.files;
-        files.forEach(f => f.remove());
-        this.fileSet.clear();
-        this.setState({downloading: false, pause: false, files});
+        this.state.files.forEach(f => f.remove());
+        this.setState({
+          downloading: false,
+          pause: false,
+          files: this.fileSet.clear(),
+        });
       }
     }
   }

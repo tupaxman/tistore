@@ -8,7 +8,7 @@ import Icon from "react-fa";
 import {ToolButton} from "../theme";
 import Tistory from "../tistory";
 
-export default class Toolbar extends React.Component {
+export default class Toolbar extends React.PureComponent {
   styles = {
     main: {
       display: "flex",

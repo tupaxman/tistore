@@ -6,7 +6,7 @@
 import React from "react";
 import FileItem from "./file-item";
 
-export default class FileList extends React.Component {
+export default class FileList extends React.PureComponent {
   styles = {
     main: {
       width: "100%",
