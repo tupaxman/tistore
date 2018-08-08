@@ -47,6 +47,11 @@ const PLUGINS = DEBUG ? COMMON_PLUGINS : COMMON_PLUGINS.concat([
 
 export default {
   target: "node",
+  stats: {
+    children: false,
+    entrypoints: false,
+    modules: false,
+  },
   entry: "./src/index/index",
   output: {
     path: path.join(__dirname, DIST_DIR),

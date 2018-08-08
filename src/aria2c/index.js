@@ -14,10 +14,7 @@ if (WIN_BUILD) {
 export default {
   // FIXME(Kagami): What to do if port is in use?
   _RPC_PORT: 11208,
-  // NOTE(Kagami): This is hard aria2 limitation. So if all our links
-  // from the same server, concurency won't exceed that number. This
-  // shouldn't happen on practice though (tistory uses a lot of storage
-  // servers).
+  // Current aria2 limit.
   _MAX_CONNECTION_PER_SERVER: 16,
   _genRPCSecret() {
     // 128 bit of entropy.
@@ -64,11 +61,8 @@ export default {
         }
       });
     });
-    // We need to provide method to kill spawned process in any case
-    // because our detection of "normal run" may fail or whatever.
-    ariap.kill = function() {
-      // XXX(Kagami): aria2 theoretically may ignore SIGTERM and
-      // continue to run. This shouldn't happen in practice though.
+    // TODO(Kagami): Is it enough to emit SIGTERM?
+    ariap.kill = () => {
       if (!exited) proc.kill();
     };
     return ariap;

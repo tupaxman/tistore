@@ -132,14 +132,10 @@ const Index = createReactClass({
   spawnAria() {
     const ariap = Aria2s.spawn();
     process.on("exit", () => {
-      // Always stop spawned process on exit.
-      // TODO(Kagami): Unfortunately nw doesn't fire this event on
-      // "Reload app" thus leaving aria2 process untouched.
-      try {
-        ariap.kill();
-      } catch(e) {
-        /* skip */
-      }
+      try { ariap.kill(); } catch(e) { /* skip */ }
+    });
+    window.addEventListener("beforeunload", () => {
+      try { ariap.kill(); } catch(e) { /* skip */ }
     });
     ariap.then(aria2c => {
       aria2c.on("close", this.handleAriaDisconnect);
@@ -248,8 +244,10 @@ const Index = createReactClass({
       links.forEach(url => this.fileSet.add({url}));
       this.setState({crawling: false, url: ""});
       this.runDownload();
-    }, () => {
+    }, (err) => {
       // FIXME(Kagami): Display crawling errors.
+      // eslint-disable-next-line no-console
+      console.error("Failed to crawl: " + err);
       this.setState({crawling: false, url: ""});
     });
   },
