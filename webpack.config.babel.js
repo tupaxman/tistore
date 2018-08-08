@@ -1,5 +1,6 @@
 import path from "path";
 import webpack from "webpack";
+import UglifyJsPlugin from "uglifyjs-webpack-plugin";
 import ExtractTextPlugin from "extract-text-webpack-plugin";
 import pkg from "./package.json";
 
@@ -38,9 +39,12 @@ const COMMON_PLUGINS = [
   new ExtractTextPlugin("index.css"),
 ];
 const PLUGINS = DEBUG ? COMMON_PLUGINS : COMMON_PLUGINS.concat([
-  new webpack.optimize.UglifyJsPlugin({
-    output: {comments: false},
-    compress: {warnings: false},
+  new UglifyJsPlugin({
+    uglifyOptions: {
+      output: {
+        comments: false,
+      },
+    },
   }),
 ]);
 
