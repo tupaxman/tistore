@@ -4,12 +4,11 @@
  */
 
 import React from "react";
-import createReactClass from "create-react-class";
 import Icon from "react-fa";
 import {showSpeed} from "../util";
 
-export default createReactClass({
-  styles: {
+export default class StatusBar extends React.Component {
+  styles = {
     main: {
       margin: "3px 5px",
       cursor: "default",
@@ -40,12 +39,12 @@ export default createReactClass({
       color: "#333",
       fontStyle: "italic",
     },
-  },
-  handleOutDirClick(e) {
+  }
+  handleOutDirClick = (e) => {
     e.preventDefault();
     // `openItem` doesn't work with directory on Linux.
     global.nw.Shell.openExternal("file://" + this.props.outDir);
-  },
+  }
   _getOutDirNode() {
     return (
       <a href="" onClick={this.handleOutDirClick}>
@@ -53,7 +52,7 @@ export default createReactClass({
         <span> {this.props.outDir}</span>
       </a>
     );
-  },
+  }
   getAriaErrorNode() {
     return (
       <span style={this.styles.error}>
@@ -61,7 +60,7 @@ export default createReactClass({
         <span> {this.props.aerror.message}</span>
       </span>
     );
-  },
+  }
   getDisconnectedNode() {
     return (
       <span style={this.styles.error}>
@@ -69,7 +68,7 @@ export default createReactClass({
         <span> Lost connection to aria2c daemon. Restart program.</span>
       </span>
     );
-  },
+  }
   getSpawningNode() {
     return (
       <span style={this.styles.spawning}>
@@ -77,7 +76,7 @@ export default createReactClass({
         <span> Spawning aria2c daemon…</span>
       </span>
     );
-  },
+  }
   getDownloadingNode() {
     const all = this.props.files.length;
     return (
@@ -89,10 +88,10 @@ export default createReactClass({
         </span>
       </span>
     );
-  },
+  }
   getPauseNode() {
     return <span>Download paused.</span>;
-  },
+  }
   getCompletedNode() {
     return (
       <span>
@@ -100,7 +99,7 @@ export default createReactClass({
         {this._getOutDirNode()}
       </span>
     );
-  },
+  }
   getCrawlingNode() {
     return (
       <span>
@@ -108,7 +107,7 @@ export default createReactClass({
         </span>
       </span>
     );
-  },
+  }
   getPreRunNode() {
     const len = this.props.files.length;
     const s = len > 1 ? "s" : "";
@@ -119,7 +118,7 @@ export default createReactClass({
         {this._getOutDirNode()}
       </span>
     );
-  },
+  }
   getPreAddNode() {
     return (
       <span>
@@ -128,7 +127,7 @@ export default createReactClass({
         {this._getOutDirNode()}
       </span>
     );
-  },
+  }
   getStatusNode() {
     if (this.props.aerror) {
       return this.getAriaErrorNode();
@@ -149,8 +148,8 @@ export default createReactClass({
     } else {
       return this.getPreAddNode();
     }
-  },
+  }
   render() {
     return <div style={this.styles.main}>{this.getStatusNode()}</div>;
-  },
-});
+  }
+}

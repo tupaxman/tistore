@@ -1,22 +1,13 @@
 /**
  * View/action logic for the single file inside list.
- * @module tistore/file-list/file
+ * @module tistore/file-list/file-item
  */
 
 import React from "react";
-import createReactClass from "create-react-class";
 import Icon from "react-fa";
 import {showSize} from "../util";
 
-export default createReactClass({
-  shouldComponentUpdate(nextProps/*, nextState*/) {
-    return (
-      this.props.errorMsg !== nextProps.errorMsg ||
-      this.props.status !== nextProps.status ||
-      this.props.name !== nextProps.name ||
-      this.props.size !== nextProps.size
-    );
-  },
+export default class FileItem extends React.PureComponent {
   getIconName() {
     const status = this.props.status;
     switch (status) {
@@ -31,17 +22,17 @@ export default createReactClass({
     default:
       return "play";
     }
-  },
+  }
   getLinkText() {
     const url = this.props.url;
     const hostIdx = url.indexOf("//") + 2;
     // Remove nonimportant junk.
     return url.slice(hostIdx);
-  },
-  handleNameClick(e) {
+  }
+  handleNameClick = (e) => {
     e.preventDefault();
     global.nw.Shell.openItem(this.props.path);
-  },
+  }
   getNameNode() {
     if (this.props.status === "error") {
       return this.props.errorMsg;
@@ -50,10 +41,10 @@ export default createReactClass({
     } else {
       return "-";
     }
-  },
+  }
   getSizeText() {
     return this.props.size != null ? showSize(this.props.size) : "";
-  },
+  }
   render() {
     const cls = `tistore_file-row tistore_file-${this.props.status}`;
     const icon = this.getIconName();
@@ -65,5 +56,5 @@ export default createReactClass({
         <td className="tistore_file-size">{this.getSizeText()}</td>
       </tr>
     );
-  },
-});
+  }
+}

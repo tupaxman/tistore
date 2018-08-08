@@ -4,13 +4,12 @@
  */
 
 import React from "react";
-import createReactClass from "create-react-class";
 import Icon from "react-fa";
 import {ToolButton} from "../theme";
 import Tistory from "../tistory";
 
-export default createReactClass({
-  styles: {
+export default class Toolbar extends React.Component {
+  styles = {
     main: {
       display: "flex",
       margin: 3,
@@ -30,7 +29,7 @@ export default createReactClass({
       textAlign: "right",
       cursor: "default",
     },
-  },
+  }
   baseDisabled() {
     // All error states, normally everything should be disabled by this.
     return (
@@ -38,33 +37,33 @@ export default createReactClass({
       !!this.props.aerror ||
       this.props.disconnected
     );
-  },
+  }
   commonDisabled() {
     // All setting buttons.
     return this.baseDisabled() || this.props.downloading || this.props.crawling;
-  },
+  }
   isSetDirDisabled() {
     return this.commonDisabled();
-  },
+  }
   isURLInvalid() {
     return !Tistory.isBlog(this.props.url) && !Tistory.isEntry(this.props.url);
-  },
+  }
   isURLDisabled() {
     return this.commonDisabled();
-  },
+  }
   getURLClassName() {
     return (this.props.url && this.isURLInvalid())
       ? "tistore_url-invalid"
       : "tistore_url";
-  },
+  }
   focusURL() {
     // We can't focus disabled input so we need to run this manually
     // after we spawned aria2.
     this.refs.url.focus();
-  },
+  }
   isCrawlDisabled() {
     return this.commonDisabled() || this.isURLInvalid();
-  },
+  }
   isStartPauseDisabled() {
     return (
       this.baseDisabled() ||
@@ -72,29 +71,29 @@ export default createReactClass({
       this.props.crawling ||
       !this.props.files.length
     );
-  },
+  }
   isStopDisabled() {
     return this.baseDisabled() || !this.props.downloading;
-  },
+  }
   isThreadsDisabled() {
     // Allow to update concurrency level on-the-fly when downloading.
     return this.baseDisabled() || this.props.crawling;
-  },
-  handleURLKey(e) {
+  }
+  handleURLKey = (e) => {
     if (e.which === 13 && !this.isCrawlDisabled()) {
       this.props.onCrawlClick();
     }
-  },
-  handleURLChange(e) {
+  }
+  handleURLChange = (e) => {
     this.props.onURLChange(e.target.value);
-  },
-  handleThreadsFocus() {
+  }
+  handleThreadsFocus = () => {
     // Allow to change value only via spinners.
     this.refs.threads.blur();
-  },
-  handleThreadsChange(e) {
+  }
+  handleThreadsChange = (e) => {
     this.props.onThreadsChange(+e.target.value);
-  },
+  }
   render() {
     // Don't allow to pause crawling yet.
     const startPauseIcon = (this.props.downloading && !this.props.pause)
@@ -155,5 +154,5 @@ export default createReactClass({
         />
       </div>
     );
-  },
-});
+  }
+}

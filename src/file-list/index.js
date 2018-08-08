@@ -4,11 +4,10 @@
  */
 
 import React from "react";
-import createReactClass from "create-react-class";
-import File from "./file";
+import FileItem from "./file-item";
 
-export default createReactClass({
-  styles: {
+export default class FileList extends React.Component {
+  styles = {
     main: {
       width: "100%",
       borderSpacing: 0,
@@ -19,17 +18,16 @@ export default createReactClass({
       whiteSpace: "nowrap",
       wordBreak: "break-all",
     },
-  },
+  }
   render() {
-    const fileNodes = this.props.files.map(file =>
-      <File key={file.url} {...file} />
-    );
     return (
       <table style={this.styles.main}>
         <tbody>
-          {fileNodes}
+          {this.props.files.map(file =>
+            <FileItem key={file.url} {...file} />
+          )}
         </tbody>
       </table>
     );
-  },
-});
+  }
+}

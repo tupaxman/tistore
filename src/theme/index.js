@@ -4,20 +4,19 @@
  */
 
 import React from "react";
-import createReactClass from "create-react-class";
 
-export const ToolButton = createReactClass({
-  styles: {
+export class ToolButton extends React.PureComponent {
+  styles = {
     main: {
       width: 48,
       fontSize: "30px",
       cursor: "pointer",
       marginRight: 3,
     },
-  },
-  handleKey(e) {
+  }
+  handleKey = (e) => {
     e.preventDefault();
-  },
+  }
   render() {
     return (
       <button
@@ -29,5 +28,5 @@ export const ToolButton = createReactClass({
         {this.props.children}
       </button>
     );
-  },
-});
+  }
+}

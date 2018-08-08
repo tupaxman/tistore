@@ -17,8 +17,11 @@
     "release": "npm run clean && npm run release-lin64 && npm run release-win32"
   },
   "babel": {
+    "plugins": [
+      "transform-es2015-modules-commonjs",
+      "transform-class-properties"
+    ],
     "presets": [
-      "env",
       "react"
     ]
   },
@@ -38,7 +41,6 @@
     "url": "https://github.com/Kagami/tistore/issues"
   },
   "dependencies": {
-    "create-react-class": "^15.6.3",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-fa": "^5.0.0",
@@ -50,7 +52,8 @@
     "babel-core": "^6.7.0",
     "babel-eslint": "^8.0.1",
     "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.7.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "babel-preset-react": "^6.5.0",
     "css-loader": "^0.28.7",
     "ejs": "^2.5.7",

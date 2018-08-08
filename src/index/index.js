@@ -7,7 +7,6 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import React from "react";
-import createReactClass from "create-react-class";
 import ReactDOM from "react-dom";
 import "./package.json.ejs";
 import "./index.html.ejs";
@@ -23,8 +22,9 @@ import FileDialog from "../file-dialog";
 import Tistory from "../tistory";
 import pkg from "../../package.json";
 
-const Index = createReactClass({
-  getInitialState() {
+class Index extends React.Component {
+  constructor(props) {
+    super(props);
     // Very simple OrderedDict equiavalent.
     this.fileSet = (function() {
       let list = [];
@@ -44,21 +44,20 @@ const Index = createReactClass({
         },
       };
     })();
-    const outDir = process.env.TISTORE_DEBUG_DIR || os.tmpdir();
-    return {
-      outDir,
+    this.state = {
+      outDir: process.env.TISTORE_DEBUG_DIR || os.tmpdir(),
       url: "",
       threads: 16,
       spawning: true,
       files: this.fileSet.list,
     };
-  },
+  }
   componentWillMount() {
     const list = process.env.TISTORE_DEBUG_LIST;
     if (list) {
       this.handleListLoad(list);
     }
-  },
+  }
   componentDidMount() {
     let mainWindow = window.nw.Window.get();
     if (!process.env.TISTORE_DEBUG) {
@@ -73,7 +72,7 @@ const Index = createReactClass({
     }
     this.setMenu();
     this.spawnAria();
-  },
+  }
   // Make sure this isn't skipped because of `shouldComponentUpdate`.
   componentDidUpdate() {
     const isReady = !(
@@ -86,23 +85,19 @@ const Index = createReactClass({
     this.addLinksItem.enabled = isReady;
     this.exportLinksItem.enabled = isReady && hasLinks;
     this.clearLinksItem.enabled = isReady && hasLinks;
-  },
+  }
   setMenu() {
     this.addLinksItem = new window.nw.MenuItem({
       label: "Add from file",
-      // XXX(Kagami): Without wrapper function Chrome freezes and prints
-      // tons of "Unexpected v8 value type encountered" errors. For some
-      // reason component's functions get serialized to "native code".
-      // This is regression somewhere between nw.js 0.13 and 0.26.
-      click: () => this.handleLinksAdd(),
+      click: this.handleLinksAdd,
     });
     this.exportLinksItem = new window.nw.MenuItem({
       label: "Export to file",
-      click: () => this.handleLinksExport(),
+      click: this.handleLinksExport,
     });
     this.clearLinksItem = new window.nw.MenuItem({
       label: "Clear list",
-      click: () => this.handleLinksClear(),
+      click: this.handleLinksClear,
     });
     let linksMenu = new window.nw.Menu();
     linksMenu.append(this.addLinksItem);
@@ -114,11 +109,11 @@ const Index = createReactClass({
     let helpMenu = new window.nw.Menu();
     helpMenu.append(new window.nw.MenuItem({
       label: "About",
-      click: () => this.handleAboutClick(),
+      click: this.handleAboutClick,
     }));
     helpMenu.append(new window.nw.MenuItem({
       label: "Official site",
-      click: () => this.handleSiteClick(),
+      click: this.handleSiteClick,
     }));
     let helpItem = new window.nw.MenuItem({label: "Help"});
     helpItem.submenu = helpMenu;
@@ -128,7 +123,7 @@ const Index = createReactClass({
     menu.append(helpItem);
     let mainWindow = window.nw.Window.get();
     mainWindow.menu = menu;
-  },
+  }
   spawnAria() {
     const ariap = Aria2s.spawn();
     process.on("exit", () => {
@@ -149,8 +144,8 @@ const Index = createReactClass({
     }).catch(err => {
       this.setState({spawning: false, aerror: err});
     });
-  },
-  styles: {
+  }
+  styles = {
     main: {
       display: "flex",
       flexDirection: "column",
@@ -162,18 +157,18 @@ const Index = createReactClass({
       border: "solid #a9a9a9",
       borderWidth: "1px 0",
     },
-  },
+  }
   clearCompleted() {
     if (this.state.completed) {
       this.fileSet.clear();
       this.setState({completed: false});
     }
-  },
-  handleLinksAdd() {
+  }
+  handleLinksAdd = () => {
     this.clearCompleted();
     this.refs.openFile.select().then(f => this.handleListLoad(f.path));
-  },
-  handleListLoad(fpath) {
+  }
+  handleListLoad = (fpath) => {
     // Just ignore any read errors.
     const data = fs.readFileSync(fpath, {encoding: "utf-8"});
     data.trim().split(/\r?\n/).forEach(line => {
@@ -185,50 +180,50 @@ const Index = createReactClass({
       }
     });
     this.setState({files: this.fileSet.list});
-  },
-  handleLinksExport() {
+  }
+  handleLinksExport = () => {
     this.refs.saveFile.select().then(file => {
       const data = this.state.files.map(f => f.url).join(os.EOL);
       // TODO(Kagami): Handle write errors.
       fs.writeFileSync(file.path, data);
     });
-  },
-  handleLinksClear() {
+  }
+  handleLinksClear = () => {
     this.fileSet.clear();
     this.setState({completed: false});
-  },
+  }
   setDir(outDir) {
     this.aria2c.setOption("dir", outDir);
     this.setState({outDir});
-  },
-  handleSetDir() {
+  }
+  handleSetDir = () => {
     this.clearCompleted();
     this.refs.openDir.select().then(d => this.setDir(d.path));
-  },
-  handleAboutClick() {
+  }
+  handleAboutClick = () => {
     alert(pkg.about);
-  },
-  handleSiteClick() {
+  }
+  handleSiteClick = () => {
     global.nw.Shell.openExternal(pkg.homepage);
-  },
-  handleURLChange(url) {
+  }
+  handleURLChange = (url) => {
     this.setState({url});
-  },
-  handleThreadsChange(threads) {
+  }
+  handleThreadsChange = (threads) => {
     this.aria2c.setOption("max-concurrent-downloads", threads);
     this.setState({threads});
-  },
-  handleAriaDisconnect() {
+  }
+  handleAriaDisconnect = () => {
     // NOTE(Kagami): We can respawn aria2 daemon here but too much
     // effort. Just suggest user to restart program...
     this.setState({disconnected: true});
-  },
-  handleCrawlUpdate({eid, links, currentEntry, totalEntries}) {
+  }
+  handleCrawlUpdate = ({eid, links, currentEntry, totalEntries}) => {
     const dir = path.join(this.state.outDir, eid.toString());
     links.forEach(url => this.fileSet.add({url, dir}));
     this.setState({currentEntry, totalEntries});
-  },
-  handleCrawlClick() {
+  }
+  handleCrawlClick = () => {
     this.clearCompleted();
     let preEntries, method, opts;
     if (Tistory.isEntry(this.state.url)) {
@@ -251,7 +246,7 @@ const Index = createReactClass({
       console.error("Failed to crawl: " + err);
       this.setState({crawling: false, url: ""});
     });
-  },
+  }
   runDownload() {
     if (this.state.downloading) return;
 
@@ -361,8 +356,8 @@ const Index = createReactClass({
       };
     });
     updateStats();
-  },
-  handleStartPauseClick() {
+  }
+  handleStartPauseClick = () => {
     if (this.state.downloading) {
       const pause = !this.state.pause;
       const method = pause ? "pauseAll" : "unpauseAll";
@@ -373,10 +368,10 @@ const Index = createReactClass({
     } else {
       this.runDownload();
     }
-  },
+  }
   // TODO(Kagami): Allow to continue stopped download? Right now it will
   // download again all completed files.
-  handleStopClick() {
+  handleStopClick = () => {
     if (confirm("Are you sure you want to abort?")) {
       if (this.state.downloading) {
         const files = this.state.files;
@@ -385,7 +380,7 @@ const Index = createReactClass({
         this.setState({downloading: false, pause: false, files});
       }
     }
-  },
+  }
   render() {
     return (
       <div style={this.styles.main}>
@@ -435,7 +430,7 @@ const Index = createReactClass({
         <FileDialog ref="openDir" directory />
       </div>
     );
-  },
-});
+  }
+}
 
 ReactDOM.render(<Index/>, document.getElementById("tistore_index"));
