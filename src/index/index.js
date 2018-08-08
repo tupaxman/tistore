@@ -310,6 +310,8 @@ const Index = createReactClass({
       // Allow GC to free memory.
       this.aria2c.removeAllListeners(`start.${file.gid}`);
       this.aria2c.removeAllListeners(`pause.${file.gid}`);
+      this.aria2c.removeAllListeners(`complete.${file.gid}`);
+      this.aria2c.removeAllListeners(`error.${file.gid}`);
     };
     const bumpProgress = () => {
       this.setState({progress: ++progress});
@@ -319,6 +321,8 @@ const Index = createReactClass({
     this.setState({downloading: true, speed: 0, progress});
     files.forEach(file => {
       // TODO(Kagami): Handle addUri errors.
+      // FIXME(Kagami): Race condition if click stop before all GIDs
+      // were received.
       this.aria2c.add(file.url).then(gid => {
         file.gid = gid;
         // Happen each time user clicks start/pause button.
@@ -344,6 +348,16 @@ const Index = createReactClass({
           manageFile(file);
         });
       });
+      file.remove = () => {
+        if (file.gid != null
+          && file.status !== "complete"
+          && file.status !== "error"
+          && file.status !== "removed") {
+          this.aria2c.forceRemove(file.gid);
+          file.status = "removed";
+          removeListeners(file);
+        }
+      };
     });
     updateStats();
   },
@@ -359,11 +373,13 @@ const Index = createReactClass({
       this.runDownload();
     }
   },
+  // TODO(Kagami): Allow to continue stopped download? Right now it will
+  // download again all completed files.
   handleStopClick() {
     if (confirm("Are you sure you want to abort?")) {
       if (this.state.downloading) {
         const files = this.state.files;
-        files.forEach(f => this.aria2c.forceRemove(f.gid));
+        files.forEach(f => f.remove());
         this.fileSet.clear();
         this.setState({downloading: false, pause: false, files});
       }
