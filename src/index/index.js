@@ -47,7 +47,7 @@ class Index extends React.PureComponent {
       };
     })();
     this.state = {
-      outDir: process.env.TISTORE_DEBUG_DIR || os.tmpdir(),
+      outDir: process.env.TISTORE_DEBUG_DIR || os.homedir(),
       url: "",
       threads: 16,
       spawning: true,
@@ -266,7 +266,7 @@ class Index extends React.PureComponent {
         // was downloaded and this request completed, but checking for
         // actual status of aria2 rather than our internal status should
         // be more robust.
-        if (numActive < 1 && numWaiting < 1) {
+        if (numActive === 0 && numWaiting === 0) {
           this.setState({downloading: false, pause: false, completed: true});
         } else {
           // FIXME(Kagami): Clear on pause/disconnect.
