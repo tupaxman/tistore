@@ -22,9 +22,7 @@ const WIN_BUILD = process.env.PLATFORM === "win32";
 const TISTORE_VERSION = `${pkg.name} v${pkg.version} “${pkg.codename}”`;
 const NAMEQ = {name: "[name]"};
 const FULLNAMEQ = {name: "[name].[ext]"};
-const MANIFEST_OPTS = DEBUG
-  ? ',"chromium-args": "--enable-logging=stderr"'
-  : WIN_BUILD ? ',"chromium-args": "--user-data-dir=TistoreData"' : "";
+const MANIFEST_OPTS = DEBUG ? ',"chromium-args":"--enable-logging=stderr"' : "";
 const INDEX_LOADERS = [
   q("file", NAMEQ),
   q("ejs-html", {title: TISTORE_VERSION}),
