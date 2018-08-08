@@ -14,10 +14,10 @@ import {CHROME_UA} from "../util";
 // one. Also invite is required to register at Tistory.
 
 export default {
+  _BLOG_RE: /^(https?:\/\/[^/]+)/,
+  _ENTRY_RE: /^https?:\/\/[^/]+\/(\d+([?#]|$)|entry\/)/,
   _LINK_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
-  _ENTRY_RE: /^https?:\/\/[^/]+\/\d+([?#]|$)/i,
-  _BLOG_RE: /^https?:\/\/[^/]+(\/(?!\d)|[?#]|$)/i,
-  _getLastEntryNum(data) {
+  _getLastEntryNum(url, data) {
     let re = /<a\s+href="\/(\d+)"[\s>]/ig;
     let nums = [];
     let match;
@@ -36,6 +36,8 @@ export default {
   },
   _fetch(url) {
     return new Promise((resolve, reject) => {
+      // Encode non-ASCII path because request doesn't accept them.
+      url = new URL(url).href;
       const opts = {url, headers: {"User-Agent": CHROME_UA}};
       request.get(opts, (err, res, body) => {
         if (err) {
@@ -51,31 +53,24 @@ export default {
   prepareURL(url) {
     // Forgive user some mistakes but in code we need proper URLs.
     url = url.trim();
-    if (!url.startsWith("http://")) url = "http://" + url;
+    if (!url.startsWith("http:") && !url.startsWith("https:")) {
+      url = "http://" + url;
+    }
     return url;
-  },
-  isEntry(url) {
-    url = this.prepareURL(url);
-    return this._ENTRY_RE.test(url);
   },
   isBlog(url) {
     url = this.prepareURL(url);
     return this._BLOG_RE.test(url);
   },
-  crawlEntry(url) {
+  isEntry(url) {
     url = this.prepareURL(url);
-    return this._fetch(url).then(this._getLinks.bind(this));
+    return this._ENTRY_RE.test(url);
   },
   crawlBlog(url, opts) {
     url = this.prepareURL(url);
-
-    // Allow user to enter URLs like "a.tistory.com/category/photo" but
-    // actual entries are always at blog root, e.g. "a.tistory.com/123".
-    const pathIdx = url.indexOf("/", 7);
-    if (pathIdx !== -1) url = url.slice(0, pathIdx);
-
+    url = this._BLOG_RE.exec(url)[1];  // Get bare URL
     return this._fetch(url)
-      .then(this._getLastEntryNum.bind(this))
+      .then(this._getLastEntryNum.bind(this, url))
       .then(last => {
         let currentEntry = 0;
         function sendUpdate(links) {
@@ -98,5 +93,9 @@ export default {
           // similar to crawlEntry.
           .then(() => []);
       });
+  },
+  crawlEntry(url) {
+    url = this.prepareURL(url);
+    return this._fetch(url).then(this._getLinks.bind(this));
   },
 };

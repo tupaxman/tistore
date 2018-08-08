@@ -230,13 +230,13 @@ const Index = createReactClass({
   handleCrawlClick() {
     this.clearCompleted();
     let preEntries, method, opts;
-    if (Tistory.isBlog(this.state.url)) {
+    if (Tistory.isEntry(this.state.url)) {
+      preEntries = 1;
+      method = "crawlEntry";
+    } else {
       preEntries = "?";
       method = "crawlBlog";
       opts = {threads: this.state.threads, onUpdate: this.handleCrawlUpdate};
-    } else {
-      preEntries = 1;
-      method = "crawlEntry";
     }
     this.setState({crawling: true, currentEntry: 0, totalEntries: preEntries});
     // TODO(Kagami): Allow to pause/stop crawling.
