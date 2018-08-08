@@ -223,28 +223,28 @@ const Index = createReactClass({
     // effort. Just suggest user to restart program...
     this.setState({disconnected: true});
   },
-  handleCrawlUpdate({links, currentPage, totalPages}) {
+  handleCrawlUpdate({links, currentEntry, totalEntries}) {
     links.forEach(url => this.fileSet.add({url}));
-    this.setState({currentPage, totalPages});
+    this.setState({currentEntry, totalEntries});
   },
   handleCrawlClick() {
     this.clearCompleted();
-    let prePages, method, opts;
+    let preEntries, method, opts;
     if (Tistory.isBlog(this.state.url)) {
-      prePages = "?";
+      preEntries = "?";
       method = "crawlBlog";
       opts = {threads: this.state.threads, onUpdate: this.handleCrawlUpdate};
     } else {
-      prePages = 1;
-      method = "crawlPage";
+      preEntries = 1;
+      method = "crawlEntry";
     }
-    this.setState({crawling: true, currentPage: 0, totalPages: prePages});
+    this.setState({crawling: true, currentEntry: 0, totalEntries: preEntries});
     // TODO(Kagami): Allow to pause/stop crawling.
     Tistory[method](this.state.url, opts).then(links => {
       links.forEach(url => this.fileSet.add({url}));
       this.setState({crawling: false, url: ""});
       this.runDownload();
-    }, (err) => {
+    }, err => {
       // FIXME(Kagami): Display crawling errors.
       // eslint-disable-next-line no-console
       console.error("Failed to crawl: " + err);
@@ -407,8 +407,8 @@ const Index = createReactClass({
             speed={this.state.speed}
             disconnected={this.state.disconnected}
             crawling={this.state.crawling}
-            currentPage={this.state.currentPage}
-            totalPages={this.state.totalPages}
+            currentEntry={this.state.currentEntry}
+            totalEntries={this.state.totalEntries}
             files={this.state.files}
             outDir={this.state.outDir}
           />

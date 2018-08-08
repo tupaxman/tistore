@@ -47,7 +47,7 @@ export default createReactClass({
     return this.commonDisabled();
   },
   isURLInvalid() {
-    return !Tistory.isBlog(this.props.url) && !Tistory.isPage(this.props.url);
+    return !Tistory.isBlog(this.props.url) && !Tistory.isEntry(this.props.url);
   },
   isURLDisabled() {
     return this.commonDisabled();
@@ -114,7 +114,7 @@ export default createReactClass({
           type="text"
           style={this.styles.url}
           className={this.getURLClassName()}
-          placeholder="Tistory blog/page URL"
+          placeholder="Tistory blog/entry URL"
           disabled={this.isURLDisabled()}
           onKeyPress={this.handleURLKey}
           onChange={this.handleURLChange}

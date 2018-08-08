@@ -104,7 +104,8 @@ export default createReactClass({
   getCrawlingNode() {
     return (
       <span>
-        <span>Crawling: {this.props.currentPage}/{this.props.totalPages}</span>
+        <span>Crawling: {this.props.currentEntry}/{this.props.totalEntries}
+        </span>
       </span>
     );
   },
