@@ -4,6 +4,7 @@
  */
 
 import assert from "assert";
+import he from "he";
 import request from "request";
 import throat from "throat";
 import {CHROME_UA} from "../util";
@@ -16,7 +17,8 @@ import {CHROME_UA} from "../util";
 export default {
   _BLOG_RE: /^(https?:\/\/[^/]+)/,
   _ENTRY_RE: /^https?:\/\/[^/]+\/(\d+([?#]|$)|entry\/)/,
-  _LINK_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
+  _LINK_LEGACY_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
+  _LINK_MODERN_RE: /https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/img\.jpg\?(attach|nm)[^'"]+/g,
   _getLastEntryNum(data) {
     // Some blogs only have that type of links, e.g.
     // http://fortheone.tistory.com/
@@ -42,9 +44,21 @@ export default {
     return last;
   },
   _getLinks(data) {
+    const legacyLinks = (data.match(this._LINK_LEGACY_RE) || []).map(link => link + "?original");
+    const modernLinks = (data.match(this._LINK_MODERN_RE) || []);
+
+    // Parse modern links with filename in separate attribute.
+    const re = /(https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/img\.jpg)['"][^>]+data-filename=['"]([^'"]+)/g;
+    let match = null;
+    while (match = re.exec(data)) {  // eslint-disable-line no-cond-assign
+      const name = he.decode(match[2], {isAttributeValue: true});
+      const link = match[1] + "?attach=1&nm=" + encodeURIComponent(name);
+      modernLinks.push(link);
+    }
+
     // Don't mind returning duplicates since they will be filtered out
     // by `tistore/index.fileSet`.
-    return (data.match(this._LINK_RE) || []).map(link => link + "?original");
+    return legacyLinks.concat(modernLinks);
   },
   _fetch(url) {
     return new Promise((resolve, reject) => {

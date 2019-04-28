@@ -41,6 +41,7 @@
     "url": "https://github.com/Kagami/tistore/issues"
   },
   "dependencies": {
+    "he": "^1.2.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-fa": "^5.0.0",
