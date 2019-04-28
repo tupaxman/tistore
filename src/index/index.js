@@ -62,16 +62,21 @@ class Index extends React.PureComponent {
   }
   componentDidMount() {
     let mainWindow = window.nw.Window.get();
-    if (!process.env.TISTORE_DEBUG) {
-      mainWindow.on("close", () => {
-        if (confirm("Are you sure you want to exit?")) {
-          // NOTE(Kagami): aria2 process will be killed by onexit handler;
-          // it should be rather safe since we send SIGTERM and aria2
-          // should do all needed cleanup before exit.
-          mainWindow.close(true);
-        }
-      });
-    }
+    mainWindow.on("close", () => {
+      const shouldExit = process.env.TISTORE_DEBUG
+        ? true
+        : confirm("Are you sure you want to exit?");
+      if (shouldExit) {
+        // NOTE(Kagami): aria2 process will be killed by onexit handler;
+        // it should be rather safe since we send SIGTERM and aria2
+        // should do all needed cleanup before exit.
+        mainWindow.close(true);
+        // XXX(Kagami): Starting with nw.js 0.35.0 it doesn't fire
+        // exit event so we need to do that by ourselves. Would be
+        // nice to report it.
+        process.emit("exit");
+      }
+    });
     this.setMenu();
     this.spawnAria();
   }
