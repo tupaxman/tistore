@@ -17,8 +17,6 @@ import {CHROME_UA} from "../util";
 export default {
   _BLOG_RE: /^(https?:\/\/[^/]+)/,
   _ENTRY_RE: /^https?:\/\/[^/]+\/(\d+([?#]|$)|entry\/)/,
-  _LINK_LEGACY_RE: /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g,
-  _LINK_MODERN_RE: /https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/img\.jpg\?(attach|nm)[^'"]+/g,
   _getLastEntryNum(data) {
     // Some blogs only have that type of links, e.g.
     // http://fortheone.tistory.com/
@@ -44,21 +42,34 @@ export default {
     return last;
   },
   _getLinks(data) {
-    const legacyLinks = (data.match(this._LINK_LEGACY_RE) || []).map(link => link + "?original");
-    const modernLinks = (data.match(this._LINK_MODERN_RE) || []);
-
-    // Parse modern links with filename in separate attribute.
-    const re = /(https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/img\.jpg)['"][^>]+data-filename=['"]([^'"]+)/g;
+    const links = [];
+    let re = null;
     let match = null;
+
+    // Legacy links
+    re = /https?:\/\/t\d+\.daumcdn\.net\/cfile\/tistory\/\w+/g;
+    match = data.match(re) || [];
+    for (const link of match) {
+      links.push(link + "?original");
+    }
+
+    // Modern link attachments
+    re = /(https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/)img\.jpg\?(?:attach=1&)?nm=([^'"&]+)/g;
     while (match = re.exec(data)) {  // eslint-disable-line no-cond-assign
       const name = he.decode(match[2], {isAttributeValue: true});
-      const link = match[1] + "?attach=1&nm=" + encodeURIComponent(name);
-      modernLinks.push(link);
+      links.push(match[1] + name/*should be already escaped*/ + "?knm=img.jpg");
+    }
+
+    // Modern link with filename in separate attr
+    re = /(https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/)img\.jpg['"][^>]+data-filename=['"]([^'"]+)/g;
+    while (match = re.exec(data)) {  // eslint-disable-line no-cond-assign
+      const name = he.decode(match[2], {isAttributeValue: true});
+      links.push(match[1] + encodeURIComponent(name) + "?knm=img.jpg");
     }
 
     // Don't mind returning duplicates since they will be filtered out
     // by `tistore/index.fileSet`.
-    return legacyLinks.concat(modernLinks);
+    return links;
   },
   _fetch(url) {
     return new Promise((resolve, reject) => {
