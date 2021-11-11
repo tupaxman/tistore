@@ -54,14 +54,14 @@ export default {
     }
 
     // Modern link attachments
-    re = /(https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/)img\.jpg\?(?:attach=1&)?nm=([^'"&]+)/g;
+    re = /(https?:\/\/[a-z]+\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/)img\.jpg\?(?:attach=1&)?nm=([^'"&]+)/g;
     while (match = re.exec(data)) {  // eslint-disable-line no-cond-assign
       const name = he.decode(match[2], {isAttributeValue: true});
       links.push(match[1] + name/*should be already escaped*/ + "?knm=img.jpg");
     }
 
     // Modern link with filename in separate attr
-    re = /(https?:\/\/k\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/)img\.jpg['"][^>]+data-filename=['"]([^'"]+)/g;
+    re = /(https?:\/\/[a-z]+\.kakaocdn\.net\/dn\/\w+\/\w+\/\w+\/)img\.jpg['"][^>]+data-filename=['"]([^'"]+)/g;
     while (match = re.exec(data)) {  // eslint-disable-line no-cond-assign
       const name = he.decode(match[2], {isAttributeValue: true});
       links.push(match[1] + encodeURIComponent(name) + "?knm=img.jpg");
