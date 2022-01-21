@@ -1,7 +1,7 @@
 {
   "name": "tistore",
-  "version": "0.5.2",
-  "codename": "Pyo Hyemi",
+  "version": "0.5.3",
+  "codename": "tupaxman",
   "description": "Tistory photo grabber",
   "homepage": "https://github.com/Kagami/tistore",
   "about": "tistore is a simple GUI application for grabbing photos from Tistory blogs. It can grab entire blog, separate post or use a list of URLs and download them in parallel using blazingly fast aria2 backend.",
