@@ -10,11 +10,11 @@ tistore is a simple GUI application for grabbing photos from Tistory blogs. It c
 
 ### Windows
 
-Download [latest release](https://github.com/Kagami/tistore/releases), unpack and run `tistore.exe`.
+Download [latest release](https://github.com/tupaxman/tistore/releases/), unpack and run `tistore.exe`.
 
 ### Linux
 
-You will need aria2 installed. Download [latest release](https://github.com/Kagami/tistore/releases), unpack and run `./tistore`.
+You will need aria2 installed. Download [latest release](https://github.com/tupaxman/tistore/releases/), unpack and run `./tistore`.
 
 ## License
 
